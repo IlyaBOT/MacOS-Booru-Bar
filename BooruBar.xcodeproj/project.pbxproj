@@ -50,7 +50,6 @@
 		C1C399233050A6340064F4A6 /* Exceptions for "BooruBar" folder in "iBooruBar" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				GalleryView.swift,
 				Models/BooruFilterOption.swift,
 				Models/BooruImage.swift,
 				Models/BooruSite.swift,
