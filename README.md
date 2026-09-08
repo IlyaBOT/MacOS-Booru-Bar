@@ -1,5 +1,20 @@
 # MacOS-Booru-Bar
 
+<p align="center">
+  <a href="https://github.com/user-attachments/assets/803bd108-948a-4a30-a332-4dab03ace9ae">
+    <img width="232" height="188" alt="image" src="https://github.com/user-attachments/assets/803bd108-948a-4a30-a332-4dab03ace9ae" />
+  </a>
+  <a href="https://github.com/user-attachments/assets/6e106369-d06c-4578-bcaf-2da653e44cff">
+    <img width="253" height="383" alt="image" src="https://github.com/user-attachments/assets/6e106369-d06c-4578-bcaf-2da653e44cff" />
+  </a>
+  <a href="https://github.com/user-attachments/assets/6e3c386a-bc9d-49e4-8231-327726dce17b">
+    <img width="253" height="383" alt="image" src="https://github.com/user-attachments/assets/6e3c386a-bc9d-49e4-8231-327726dce17b" />
+  </a>
+  <a href="https://github.com/user-attachments/assets/263aca2f-366b-4b74-9eba-93a9a8fc484e">
+    <img width="253" height="383" alt="image" src="https://github.com/user-attachments/assets/263aca2f-366b-4b74-9eba-93a9a8fc484e" />
+  </a>
+</p>
+
 A small macOS menu bar app for browsing art from booru imageboards.
 
 I made this project mostly for myself and just for fun. I wanted to try native macOS development with Swift and SwiftUI in Xcode, and decided to combine learning something new with something fun. _And maybe useful?_
