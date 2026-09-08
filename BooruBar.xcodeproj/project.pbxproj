@@ -21,17 +21,59 @@
 			remoteGlobalIDString = C1A519722FE846F300635089;
 			remoteInfo = BooruBar;
 		};
+		C1C399083050A4170064F4A6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C1A5196B2FE846F300635089 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C1C398FA3050A4120064F4A6;
+			remoteInfo = iBooruBar;
+		};
+		C1C399123050A4170064F4A6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C1A5196B2FE846F300635089 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C1C398FA3050A4120064F4A6;
+			remoteInfo = iBooruBar;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		C1A519732FE846F300635089 /* BooruBar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BooruBar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C1A519812FE846F700635089 /* BooruBarTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BooruBarTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C1A5198B2FE846F800635089 /* BooruBarUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BooruBarUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C1C398FB3050A4120064F4A6 /* iBooruBar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iBooruBar.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C1C399073050A4170064F4A6 /* iBooruBarTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iBooruBarTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C1C399113050A4170064F4A6 /* iBooruBarUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iBooruBarUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		C1C399233050A6340064F4A6 /* Exceptions for "BooruBar" folder in "iBooruBar" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				GalleryView.swift,
+				Models/BooruFilterOption.swift,
+				Models/BooruImage.swift,
+				Models/BooruSite.swift,
+				Networking/BooruClient.swift,
+				Networking/E621Client.swift,
+				Networking/GelbooruDapiClient.swift,
+				Networking/LegacyGelbooruClient.swift,
+				Networking/PhilomenaClient.swift,
+				Storage/KeychainStore.swift,
+				Storage/SettingsStore.swift,
+				Utilities/URLQueryBuilder.swift,
+				ViewModels/GalleryViewModel.swift,
+			);
+			target = C1C398FA3050A4120064F4A6 /* iBooruBar */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		C1A519752FE846F300635089 /* BooruBar */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				C1C399233050A6340064F4A6 /* Exceptions for "BooruBar" folder in "iBooruBar" target */,
+			);
 			path = BooruBar;
 			sourceTree = "<group>";
 		};
@@ -43,6 +85,21 @@
 		C1A5198E2FE846F800635089 /* BooruBarUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = BooruBarUITests;
+			sourceTree = "<group>";
+		};
+		C1C398FC3050A4120064F4A6 /* iBooruBar */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = iBooruBar;
+			sourceTree = "<group>";
+		};
+		C1C3990A3050A4170064F4A6 /* iBooruBarTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = iBooruBarTests;
+			sourceTree = "<group>";
+		};
+		C1C399143050A4170064F4A6 /* iBooruBarUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = iBooruBarUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -69,6 +126,27 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C1C398F83050A4120064F4A6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C1C399043050A4170064F4A6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C1C3990E3050A4170064F4A6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -78,6 +156,9 @@
 				C1A519752FE846F300635089 /* BooruBar */,
 				C1A519842FE846F700635089 /* BooruBarTests */,
 				C1A5198E2FE846F800635089 /* BooruBarUITests */,
+				C1C398FC3050A4120064F4A6 /* iBooruBar */,
+				C1C3990A3050A4170064F4A6 /* iBooruBarTests */,
+				C1C399143050A4170064F4A6 /* iBooruBarUITests */,
 				C1A519742FE846F300635089 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -88,6 +169,9 @@
 				C1A519732FE846F300635089 /* BooruBar.app */,
 				C1A519812FE846F700635089 /* BooruBarTests.xctest */,
 				C1A5198B2FE846F800635089 /* BooruBarUITests.xctest */,
+				C1C398FB3050A4120064F4A6 /* iBooruBar.app */,
+				C1C399073050A4170064F4A6 /* iBooruBarTests.xctest */,
+				C1C399113050A4170064F4A6 /* iBooruBarUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -163,6 +247,74 @@
 			productReference = C1A5198B2FE846F800635089 /* BooruBarUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		C1C398FA3050A4120064F4A6 /* iBooruBar */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C1C3991F3050A4170064F4A6 /* Build configuration list for PBXNativeTarget "iBooruBar" */;
+			buildPhases = (
+				C1C398F73050A4120064F4A6 /* Sources */,
+				C1C398F83050A4120064F4A6 /* Frameworks */,
+				C1C398F93050A4120064F4A6 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				C1C398FC3050A4120064F4A6 /* iBooruBar */,
+			);
+			name = iBooruBar;
+			packageProductDependencies = (
+			);
+			productName = iBooruBar;
+			productReference = C1C398FB3050A4120064F4A6 /* iBooruBar.app */;
+			productType = "com.apple.product-type.application";
+		};
+		C1C399063050A4170064F4A6 /* iBooruBarTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C1C399203050A4170064F4A6 /* Build configuration list for PBXNativeTarget "iBooruBarTests" */;
+			buildPhases = (
+				C1C399033050A4170064F4A6 /* Sources */,
+				C1C399043050A4170064F4A6 /* Frameworks */,
+				C1C399053050A4170064F4A6 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C1C399093050A4170064F4A6 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				C1C3990A3050A4170064F4A6 /* iBooruBarTests */,
+			);
+			name = iBooruBarTests;
+			packageProductDependencies = (
+			);
+			productName = iBooruBarTests;
+			productReference = C1C399073050A4170064F4A6 /* iBooruBarTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		C1C399103050A4170064F4A6 /* iBooruBarUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C1C399213050A4170064F4A6 /* Build configuration list for PBXNativeTarget "iBooruBarUITests" */;
+			buildPhases = (
+				C1C3990D3050A4170064F4A6 /* Sources */,
+				C1C3990E3050A4170064F4A6 /* Frameworks */,
+				C1C3990F3050A4170064F4A6 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C1C399133050A4170064F4A6 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				C1C399143050A4170064F4A6 /* iBooruBarUITests */,
+			);
+			name = iBooruBarUITests;
+			packageProductDependencies = (
+			);
+			productName = iBooruBarUITests;
+			productReference = C1C399113050A4170064F4A6 /* iBooruBarUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -184,6 +336,17 @@
 						CreatedOnToolsVersion = 16.4;
 						TestTargetID = C1A519722FE846F300635089;
 					};
+					C1C398FA3050A4120064F4A6 = {
+						CreatedOnToolsVersion = 16.4;
+					};
+					C1C399063050A4170064F4A6 = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = C1C398FA3050A4120064F4A6;
+					};
+					C1C399103050A4170064F4A6 = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = C1C398FA3050A4120064F4A6;
+					};
 				};
 			};
 			buildConfigurationList = C1A5196E2FE846F300635089 /* Build configuration list for PBXProject "BooruBar" */;
@@ -203,6 +366,9 @@
 				C1A519722FE846F300635089 /* BooruBar */,
 				C1A519802FE846F700635089 /* BooruBarTests */,
 				C1A5198A2FE846F800635089 /* BooruBarUITests */,
+				C1C398FA3050A4120064F4A6 /* iBooruBar */,
+				C1C399063050A4170064F4A6 /* iBooruBarTests */,
+				C1C399103050A4170064F4A6 /* iBooruBarUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -223,6 +389,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		C1A519892FE846F800635089 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C1C398F93050A4120064F4A6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C1C399053050A4170064F4A6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C1C3990F3050A4170064F4A6 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -253,6 +440,27 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C1C398F73050A4120064F4A6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C1C399033050A4170064F4A6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C1C3990D3050A4170064F4A6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -265,6 +473,16 @@
 			isa = PBXTargetDependency;
 			target = C1A519722FE846F300635089 /* BooruBar */;
 			targetProxy = C1A5198C2FE846F800635089 /* PBXContainerItemProxy */;
+		};
+		C1C399093050A4170064F4A6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C1C398FA3050A4120064F4A6 /* iBooruBar */;
+			targetProxy = C1C399083050A4170064F4A6 /* PBXContainerItemProxy */;
+		};
+		C1C399133050A4170064F4A6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C1C398FA3050A4120064F4A6 /* iBooruBar */;
+			targetProxy = C1C399123050A4170064F4A6 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -408,6 +626,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 11.5;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = ru.ibworkshop.BooruBar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -436,6 +655,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 11.5;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = ru.ibworkshop.BooruBar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -513,6 +733,175 @@
 			};
 			name = Release;
 		};
+		C1C399193050A4170064F4A6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 36FFHP37HT;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = iBooruBar;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = ru.ibworkshop.iBooruBar;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C1C3991A3050A4170064F4A6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 36FFHP37HT;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = iBooruBar;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = ru.ibworkshop.iBooruBar;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		C1C3991B3050A4170064F4A6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 36FFHP37HT;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = ru.ibworkshop.iBooruBarTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iBooruBar.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iBooruBar";
+			};
+			name = Debug;
+		};
+		C1C3991C3050A4170064F4A6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 36FFHP37HT;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = ru.ibworkshop.iBooruBarTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iBooruBar.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iBooruBar";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		C1C3991D3050A4170064F4A6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 36FFHP37HT;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = ru.ibworkshop.iBooruBarUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iBooruBar;
+			};
+			name = Debug;
+		};
+		C1C3991E3050A4170064F4A6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 36FFHP37HT;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = ru.ibworkshop.iBooruBarUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iBooruBar;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -548,6 +937,33 @@
 			buildConfigurations = (
 				C1A5199C2FE846F800635089 /* Debug */,
 				C1A5199D2FE846F800635089 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C1C3991F3050A4170064F4A6 /* Build configuration list for PBXNativeTarget "iBooruBar" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C1C399193050A4170064F4A6 /* Debug */,
+				C1C3991A3050A4170064F4A6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C1C399203050A4170064F4A6 /* Build configuration list for PBXNativeTarget "iBooruBarTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C1C3991B3050A4170064F4A6 /* Debug */,
+				C1C3991C3050A4170064F4A6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C1C399213050A4170064F4A6 /* Build configuration list for PBXNativeTarget "iBooruBarUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C1C3991D3050A4170064F4A6 /* Debug */,
+				C1C3991E3050A4170064F4A6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

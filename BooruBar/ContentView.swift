@@ -116,13 +116,14 @@ struct ContentView: View {
             .disabled(settingsStore.sites.isEmpty)
             .help("Booru source")
 
-            Button("Connect") {
-                Task {
-                    isShowingSources = false
-                    isShowingFilters = false
-                    await viewModel.connect()
-                }
-            }
+// The manual "Connect button" is no longer needed, as the connection is made automatically when you select the source site from the drop-down list.
+//            Button("Connect") {
+//                Task {
+//                    isShowingSources = false
+//                    isShowingFilters = false
+//                    await viewModel.connect()
+//                }
+//            }
             .disabled(settingsStore.sites.isEmpty || viewModel.isLoading)
 
             Button {
