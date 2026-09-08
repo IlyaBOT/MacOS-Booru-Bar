@@ -1,4 +1,4 @@
-# MacOS-Booru-Bar
+# iBooru Bar
 
 <p align="center">
   <a href="https://github.com/user-attachments/assets/803bd108-948a-4a30-a332-4dab03ace9ae">
