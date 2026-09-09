@@ -1,4 +1,7 @@
 # iBooru Bar
+A small MacOS Menu Bar App and iOS Application for browsing art from booru imageboards.
+
+I made this project mostly for myself and just for fun. I wanted to try native macOS development with Swift and SwiftUI in Xcode, and decided to combine learning something new with something fun. _And maybe useful?_
 
 <p align="center">
   <a href="https://github.com/user-attachments/assets/6e106369-d06c-4578-bcaf-2da653e44cff">
@@ -21,11 +24,9 @@
   </a>
 </p>
 
-A small macOS menu bar app for browsing art from booru imageboards.
+## Project description:
 
-I made this project mostly for myself and just for fun. I wanted to try native macOS development with Swift and SwiftUI in Xcode, and decided to combine learning something new with something fun. _And maybe useful?_
-
-The app lives in the macOS menu bar and lets you quickly open a scrollable art feed without keeping a browser tab around.
+The app lives in the macOS menu bar and lets you quickly open a scrollable art feed without keeping a browser tab around. The iOS version is a full-fledged app with identical functionality _(inherited from the MacOS Menu Bar App version)_ but a design adapted for touch controls. The app's design has been tested on the iPhone SE 3 (iOS 26.5.2). I'm unsure how it performs on other iPhone models, so if you encounter any design issues, please feel free to submit a screenshot and a description of the problem in the [Issues](https://github.com/IlyaBOT/iBooru-Bar/issues) section!
 
 ## Features:
 - Built with Swift and SwiftUI
@@ -37,12 +38,12 @@ The app lives in the macOS menu bar and lets you quickly open a scrollable art f
 - e621 API key support
 
 ## Currently supported / tested:
-- Derpibooru
-- Furbooru
-- Safebooru
-- e621
-- The Azure Blade
-- All girl
+- Derpibooru [Tested. The Popular and New list is working. Search is working. Filters is working]
+- Furbooru [Tested. The Popular and New list is working. Search is working]
+- Safebooru [Tested. The Popular and New list is working. Search is working]
+- e621 [Tested. The Popular and New list is working. Search is working]
+- The Azure Blade [Tested. The Popular and New list isn't working. Search is working]
+- All girl [Tested. The Popular and New list isn't working. Search is working]
 
 The project supports multiple backend types instead of assuming that every booru uses the same API.
 
@@ -54,10 +55,10 @@ The project supports multiple backend types instead of assuming that every booru
 _More backends may be added later._
 
 ## Requirements:
-- macOS 13 or newer
-- Intel or Apple Silicon Mac
+- Intel or Apple Silicon Mac with macOS 13 or newer (There are plans to lower the requirements to macOS 11)
+- iOS 15.5 or newer
 
-The project was originally developed and tested on an Intel MacBook Air 2020 (MacBookAir9,1 macOS 15.7.7).
+The project was originally developed and tested on an Intel MacBook Air 2020 (MacBookAir9,1 macOS 15.7.7) and iPhone SE 3 (2022 128Gb).
 
 ## Building
 Open the project in Xcode, or build it from the terminal:
