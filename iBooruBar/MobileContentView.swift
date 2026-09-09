@@ -5,6 +5,8 @@ struct MobileContentView: View {
     @StateObject private var viewModel: GalleryViewModel
 
     @State private var showingSettings = false
+    @State private var filterOptions: [BooruFilterOption] = []
+    @State private var isLoadingFilters = false
 
     init(settingsStore: SettingsStore) {
         self.settingsStore = settingsStore
@@ -36,23 +38,19 @@ struct MobileContentView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    Text(selectedSite?.name ?? "iBooruBar")
-                        .font(.headline)
-                }
-
-                ToolbarItem(placement: .navigationBarLeading) {
                     sourceMenu
                 }
 
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
-                    if !availableFilters.isEmpty {
-                        filterMenu
-                    }
+                    filterMenu
 
                     Button {
                         showingSettings = true
                     } label: {
-                        Image(systemName: "gearshape")
+                        toolbarIconLabel(
+                            systemImage: "gearshape",
+                            title: "Settings"
+                        )
                     }
                 }
             }
@@ -61,15 +59,18 @@ struct MobileContentView: View {
             }
             .task {
                 await viewModel.loadInitialIfNeeded()
+                await reloadFilterOptions()
             }
             .onChange(of: settingsStore.sites) { _ in
                 Task {
                     await viewModel.handleSitesChanged()
+                    await reloadFilterOptions()
                 }
             }
             .onChange(of: settingsStore.selectedSiteID) { siteID in
                 Task {
                     await viewModel.selectSite(siteID)
+                    await reloadFilterOptions()
                 }
             }
             .onChange(of: settingsStore.nsfwEnabled) { _ in
@@ -102,31 +103,109 @@ struct MobileContentView: View {
                 }
             }
         } label: {
-            Image(systemName: "globe")
+            HStack(spacing: 5) {
+                Text(selectedSite?.name ?? "iBooruBar")
+                    .font(.headline)
+                    .lineLimit(1)
+
+                Image(systemName: "chevron.down")
+                    .font(.system(size: 9, weight: .semibold))
+                    .foregroundColor(.secondary)
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 5)
+            .background(Color(uiColor: .secondarySystemBackground))
+            .clipShape(Capsule())
+            .overlay(
+                Capsule()
+                    .stroke(Color.secondary.opacity(0.25), lineWidth: 0.5)
+            )
         }
     }
 
     private var filterMenu: some View {
         Menu {
-            ForEach(availableFilters) { filter in
-                Button {
-                    guard let selectedSite else { return }
+            if isLoadingFilters {
+                Label("Loading filters…", systemImage: "clock")
+                    .disabled(true)
+            } else if filterOptions.isEmpty {
+                Text("No filters available")
+            } else {
+                ForEach(filterOptions) { filter in
+                    Button {
+                        guard let selectedSite else { return }
 
-                    settingsStore.setSelectedFilterID(
-                        filter.id,
-                        for: selectedSite
-                    )
-                } label: {
-                    if let selectedSite,
-                       settingsStore.selectedFilterID(for: selectedSite) == filter.id {
-                        Label(filter.name, systemImage: "checkmark")
-                    } else {
-                        Text(filter.name)
+                        settingsStore.setSelectedFilterID(
+                            filter.id,
+                            for: selectedSite
+                        )
+                    } label: {
+                        if isSelected(filter) {
+                            Label(filter.name, systemImage: "checkmark")
+                        } else {
+                            Text(filter.name)
+                        }
                     }
+                    .disabled(filter.requiresNSFW && !settingsStore.nsfwEnabled)
                 }
             }
         } label: {
-            Image(systemName: "line.3.horizontal.decrease.circle")
+            toolbarIconLabel(
+                systemImage: "line.3.horizontal.decrease",
+                title: "Filter"
+            )
+        }
+    }
+
+    private func toolbarIconLabel(systemImage: String, title: String) -> some View {
+        VStack(spacing: 1) {
+            Image(systemName: systemImage)
+                .font(.system(size: 16))
+
+            Text(title)
+                .font(.system(size: 8))
+        }
+        .frame(minWidth: 34)
+    }
+
+    private func isSelected(_ filter: BooruFilterOption) -> Bool {
+        guard let selectedSite else {
+            return false
+        }
+
+        let currentID = settingsStore.selectedFilterID(for: selectedSite)
+
+        if filter.id == BooruFilterOption.allRatingsID {
+            return currentID == nil || currentID == BooruFilterOption.allRatingsID
+        }
+
+        return currentID == filter.id
+    }
+
+    @MainActor
+    private func reloadFilterOptions() async {
+        guard let selectedSite else {
+            filterOptions = []
+            return
+        }
+
+        let fallback = BooruFilterOption.mobileFallbackOptions(for: selectedSite)
+
+        guard selectedSite.apiType == .philomena else {
+            filterOptions = fallback
+            return
+        }
+
+        isLoadingFilters = true
+        defer { isLoadingFilters = false }
+
+        do {
+            filterOptions = try await BooruFilterOption.fetchMobileOptions(
+                for: selectedSite,
+                apiKey: settingsStore.apiKey(for: selectedSite)
+            )
+        } catch {
+            filterOptions = fallback
         }
     }
 
@@ -134,10 +213,6 @@ struct MobileContentView: View {
         settingsStore.sites.first {
             $0.id == viewModel.selectedSiteID
         }
-    }
-
-    private var availableFilters: [BooruFilterOption] {
-        BooruFilterOption.options(for: selectedSite)
     }
 
     private var tabBinding: Binding<GalleryTab> {
