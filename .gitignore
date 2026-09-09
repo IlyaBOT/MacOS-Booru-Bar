@@ -26,3 +26,4 @@ xcuserdata/
 *.tmp
 *.swp
 *~
+Dist/
