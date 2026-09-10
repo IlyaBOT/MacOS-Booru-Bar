@@ -3,6 +3,8 @@ import SwiftUI
 struct MobileGalleryView: View {
     @ObservedObject var viewModel: GalleryViewModel
     let playAnimatedMedia: Bool
+    let site: BooruSite?
+    @ObservedObject var settingsStore: SettingsStore
 
     var body: some View {
         Group {
@@ -36,7 +38,9 @@ struct MobileGalleryView: View {
                 ForEach(viewModel.images) { image in
                     MobileGalleryCardView(
                         image: image,
-                        playAnimatedMedia: playAnimatedMedia
+                        playAnimatedMedia: playAnimatedMedia,
+                        site: site,
+                        settingsStore: settingsStore
                     )
                     .onAppear {
                         Task {
