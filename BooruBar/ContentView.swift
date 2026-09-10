@@ -8,6 +8,7 @@
 import AppKit
 import SwiftUI
 
+@available(macOS 12.0, *)
 struct ContentView: View {
     @ObservedObject private var settingsStore: SettingsStore
     @StateObject private var viewModel: GalleryViewModel
@@ -288,6 +289,7 @@ struct ContentView: View {
     }
 }
 
+@available(macOS 12.0, *)
 #Preview {
     ContentView(settingsStore: SettingsStore())
 }
