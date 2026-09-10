@@ -149,7 +149,11 @@ struct E621Client: BooruClient {
             height: post.file?.height ?? post.sample?.height ?? post.preview?.height,
             score: post.score?.total,
             tags: post.tags?.flattened ?? [],
-            rating: post.rating
+            rating: post.rating,
+            upvotes: post.score?.up,
+            downvotes: post.score?.down,
+            commentCount: post.commentCount,
+            userVote: post.userVote
         )
     }
 
@@ -210,6 +214,30 @@ private struct E621PostDTO: Decodable {
     let score: E621ScoreDTO?
     let tags: E621TagsDTO?
     let rating: String?
+    let commentCount: Int?
+    let userVote: BooruVoteState?
+
+    enum CodingKeys: String, CodingKey {
+        case id, file, preview, sample, score, tags, rating
+        case commentCount = "comment_count"
+        case vote
+        case stats
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try? container.decodeIfPresent(Int.self, forKey: .id)
+        file = try? container.decodeIfPresent(E621FileDTO.self, forKey: .file)
+        preview = try? container.decodeIfPresent(E621PreviewDTO.self, forKey: .preview)
+        sample = try? container.decodeIfPresent(E621SampleDTO.self, forKey: .sample)
+        score = try? container.decodeIfPresent(E621ScoreDTO.self, forKey: .score)
+        tags = try? container.decodeIfPresent(E621TagsDTO.self, forKey: .tags)
+        rating = try? container.decodeIfPresent(String.self, forKey: .rating)
+        let stats = try? container.decodeIfPresent(E621StatsDTO.self, forKey: .stats)
+        commentCount = (try? container.decodeIfPresent(Int.self, forKey: .commentCount)) ?? stats?.commentCount
+        let directVote = try? container.decodeIfPresent(Int.self, forKey: .vote)
+        userVote = BooruVoteState(rawValue: directVote ?? stats?.vote ?? 0)
+    }
 }
 
 private struct E621FileDTO: Decodable {
@@ -250,7 +278,19 @@ private struct E621VideoVariantDTO: Decodable {
 }
 
 private struct E621ScoreDTO: Decodable {
+    let up: Int?
+    let down: Int?
     let total: Int?
+}
+
+private struct E621StatsDTO: Decodable {
+    let vote: Int?
+    let commentCount: Int?
+
+    enum CodingKeys: String, CodingKey {
+        case vote
+        case commentCount = "comment_count"
+    }
 }
 
 private struct E621TagsDTO: Decodable {
