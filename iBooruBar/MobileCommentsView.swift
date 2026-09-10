@@ -1,13 +1,90 @@
 import SwiftUI
-import UIKit
+
+struct MobileCommentsSheetHost: View {
+    let image: BooruImage
+    let site: BooruSite
+    @ObservedObject var settingsStore: SettingsStore
+    var onCommentCountChanged: ((Int) -> Void)?
+    var onDismiss: () -> Void
+
+    @State private var expanded = false
+    @GestureState private var dragTranslation: CGFloat = 0
+
+    var body: some View {
+        GeometryReader { geometry in
+            let collapsedHeight = min(max(geometry.size.height * 0.55, 340), 520)
+            let expandedHeight = max(geometry.size.height - 18, collapsedHeight)
+            let targetHeight = expanded ? expandedHeight : collapsedHeight
+            let interactiveOffset = max(0, dragTranslation)
+
+            ZStack(alignment: .bottom) {
+                Color.black.opacity(0.28)
+                    .ignoresSafeArea()
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        onDismiss()
+                    }
+
+                VStack(spacing: 0) {
+                    Capsule()
+                        .fill(Color.secondary.opacity(0.45))
+                        .frame(width: 38, height: 5)
+                        .padding(.top, 8)
+                        .padding(.bottom, 5)
+                        .frame(maxWidth: .infinity)
+                        .contentShape(Rectangle())
+                        .gesture(sheetDragGesture)
+
+                    MobileCommentsView(
+                        image: image,
+                        site: site,
+                        settingsStore: settingsStore,
+                        onCommentCountChanged: onCommentCountChanged,
+                        onDismiss: onDismiss
+                    )
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: targetHeight)
+                .background(Color(uiColor: .systemBackground))
+                .clipShape(
+                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                )
+                .shadow(radius: 18)
+                .offset(y: interactiveOffset)
+                .animation(.spring(response: 0.28, dampingFraction: 0.86), value: expanded)
+            }
+            .ignoresSafeArea(edges: .bottom)
+        }
+        .background(Color.clear)
+    }
+
+    private var sheetDragGesture: some Gesture {
+        DragGesture(minimumDistance: 8)
+            .updating($dragTranslation) { value, state, _ in
+                state = max(0, value.translation.height)
+            }
+            .onEnded { value in
+                if expanded {
+                    if value.translation.height > 80 {
+                        expanded = false
+                    }
+                } else {
+                    if value.translation.height < -70 {
+                        expanded = true
+                    } else if value.translation.height > 105 {
+                        onDismiss()
+                    }
+                }
+            }
+    }
+}
 
 struct MobileCommentsView: View {
     let image: BooruImage
     let site: BooruSite
     @ObservedObject var settingsStore: SettingsStore
     var onCommentCountChanged: ((Int) -> Void)?
-
-    @Environment(\.presentationMode) private var presentationMode
+    var onDismiss: () -> Void
 
     @State private var comments: [BooruComment] = []
     @State private var isLoading = true
@@ -27,9 +104,6 @@ struct MobileCommentsView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            SheetDetentConfigurator()
-                .frame(width: 0, height: 0)
-
             header
             Divider()
 
@@ -84,7 +158,7 @@ struct MobileCommentsView: View {
             }
 
             Button {
-                presentationMode.wrappedValue.dismiss()
+                onDismiss()
             } label: {
                 Image(systemName: "xmark.circle.fill")
                     .font(.title3)
@@ -92,7 +166,7 @@ struct MobileCommentsView: View {
             }
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, 12)
+        .padding(.vertical, 10)
     }
 
     private var commentList: some View {
@@ -313,32 +387,5 @@ struct MobileCommentsView: View {
         } catch {
             errorMessage = error.localizedDescription
         }
-    }
-}
-
-private struct SheetDetentConfigurator: UIViewControllerRepresentable {
-    func makeUIViewController(context: Context) -> UIViewController {
-        let controller = UIViewController()
-        controller.view.backgroundColor = .clear
-        DispatchQueue.main.async {
-            configure(from: controller)
-        }
-        return controller
-    }
-
-    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
-        DispatchQueue.main.async {
-            configure(from: uiViewController)
-        }
-    }
-
-    private func configure(from controller: UIViewController) {
-        guard let sheet = controller.parent?.presentationController as? UISheetPresentationController else { return }
-        sheet.detents = [.medium(), .large()]
-        sheet.selectedDetentIdentifier = .medium
-        sheet.prefersGrabberVisible = true
-        sheet.prefersScrollingExpandsWhenScrolledToEdge = true
-        sheet.preferredCornerRadius = 22
-        sheet.largestUndimmedDetentIdentifier = nil
     }
 }
