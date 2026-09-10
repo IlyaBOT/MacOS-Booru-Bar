@@ -76,14 +76,17 @@ struct MobileGalleryCardView: View {
         .task(id: interactionTaskID) {
             await loadPostStateIfUseful()
         }
-        .sheet(isPresented: $showingComments) {
+        .fullScreenCover(isPresented: $showingComments) {
             if let site {
-                MobileCommentsView(
+                MobileCommentsSheetHost(
                     image: image,
                     site: site,
                     settingsStore: settingsStore,
                     onCommentCountChanged: { count in
                         interactionState.commentCount = count
+                    },
+                    onDismiss: {
+                        showingComments = false
                     }
                 )
             }
@@ -201,9 +204,6 @@ struct MobileGalleryCardView: View {
     private func loadPostStateIfUseful() async {
         guard let site else { return }
 
-        // Feed responses already carry counts on Philomena/e621. Fetching the
-        // detail is still useful when authenticated because it resolves the
-        // user's current vote and refreshes stale counts.
         let shouldFetch = image.upvotes == nil
             || image.downvotes == nil
             || image.commentCount == nil
@@ -219,8 +219,7 @@ struct MobileGalleryCardView: View {
                 .fetchPostState(imageID: image.id)
             interactionState = merged(state, preservingCommentCount: false)
         } catch {
-            // Counts from the feed remain usable even if the optional detail
-            // refresh fails. Avoid turning a gallery card into an error state.
+            // Feed metadata remains usable if the optional detail refresh fails.
         }
     }
 
