@@ -60,6 +60,32 @@ final class SettingsStore: ObservableObject {
         keychainStore.apiKey(for: site.id)
     }
 
+    /// Credential string expected by the existing backend clients. Older
+    /// builds stored e621/Gelbooru credentials as `name:key` / `id:key`; keep
+    /// accepting that layout while composing it from the new secure fields.
+    func apiCredential(for site: BooruSite) -> String? {
+        guard authenticationMode(for: site) == .apiKey else { return nil }
+        let rawKey = apiKey(for: site)?.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let rawKey, !rawKey.isEmpty else { return nil }
+
+        if rawKey.contains(":") { return rawKey }
+
+        switch site.apiType {
+        case .philomena:
+            return rawKey
+        case .e621:
+            guard let username = username(for: site)?.trimmingCharacters(in: .whitespacesAndNewlines), !username.isEmpty else {
+                return rawKey
+            }
+            return "\(username):\(rawKey)"
+        case .gelbooru:
+            guard let userID = userID(for: site)?.trimmingCharacters(in: .whitespacesAndNewlines), !userID.isEmpty else {
+                return rawKey
+            }
+            return "\(userID):\(rawKey)"
+        }
+    }
+
     func username(for site: BooruSite) -> String? {
         keychainStore.username(for: site.id)
     }
