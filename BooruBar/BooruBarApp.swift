@@ -19,6 +19,7 @@ struct BooruBarApp: App {
     }
 }
 
+@MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private let settingsStore = SettingsStore()
     private let popover = NSPopover()
