@@ -289,7 +289,6 @@ struct ContentView: View {
     }
 }
 
-@available(macOS 12.0, *)
 #Preview {
     ContentView(settingsStore: SettingsStore())
 }
