@@ -25,6 +25,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusItem: NSStatusItem?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        guard #available(macOS 12.0, *) else {
+            let alert = NSAlert()
+            alert.alertStyle = .critical
+            alert.messageText = "BooruBar requires macOS 12 Monterey or newer."
+            alert.informativeText = "Please update macOS to run this version of BooruBar."
+            alert.addButton(withTitle: "Quit")
+            alert.runModal()
+            NSApplication.shared.terminate(nil)
+            return
+        }
+
+        configureStatusItem()
+    }
+
+    @available(macOS 12.0, *)
+    private func configureStatusItem() {
         NSApplication.shared.setActivationPolicy(.accessory)
 
         popover.behavior = .transient
