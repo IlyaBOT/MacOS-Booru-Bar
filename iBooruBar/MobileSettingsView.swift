@@ -32,15 +32,25 @@ struct MobileSettingsView: View {
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(site.name)
 
-                                    Text(site.apiType.displayName)
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
+                                    HStack(spacing: 4) {
+                                        Text(site.apiType.displayName)
+                                        Text("•")
+                                        Text(settingsStore.authenticationMode(for: site).displayName)
+                                    }
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
                                 }
 
                                 Spacer()
 
-                                if site.hasAPIKey {
+                                switch settingsStore.authenticationMode(for: site) {
+                                case .none:
+                                    EmptyView()
+                                case .apiKey:
                                     Image(systemName: "key")
+                                        .foregroundColor(.secondary)
+                                case .credentials:
+                                    Image(systemName: "person.crop.circle.badge.checkmark")
                                         .foregroundColor(.secondary)
                                 }
                             }
