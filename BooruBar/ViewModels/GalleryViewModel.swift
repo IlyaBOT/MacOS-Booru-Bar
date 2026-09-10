@@ -254,17 +254,36 @@ final class GalleryViewModel: ObservableObject {
     }
 
     private func makeClient(for site: BooruSite, apiKey: String?) -> BooruClient {
+        let filterID = settingsStore.selectedFilterID(for: site)
+
         switch site.apiType {
         case .philomena:
-            return PhilomenaClient(site: site, apiKey: apiKey, filterID: settingsStore.selectedFilterID(for: site))
+            return PhilomenaClient(
+                site: site,
+                apiKey: apiKey,
+                filterID: filterID
+            )
+
         case .e621:
-            return E621Client(site: site, apiKey: apiKey)
+            return E621Client(
+                site: site,
+                apiKey: apiKey,
+                filterID: filterID
+            )
+
         case .gelbooru:
             if LegacyGelbooruClient.supports(site: site) {
-                return LegacyGelbooruClient(site: site)
+                return LegacyGelbooruClient(
+                    site: site,
+                    filterID: filterID
+                )
             }
 
-            return GelbooruDapiClient(site: site, apiKey: apiKey)
+            return GelbooruDapiClient(
+                site: site,
+                apiKey: apiKey,
+                filterID: filterID
+            )
         }
     }
 

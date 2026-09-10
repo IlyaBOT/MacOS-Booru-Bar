@@ -122,16 +122,28 @@ struct PhilomenaClient: BooruClient {
             .split(separator: ",")
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
-        let shouldUseNativeFilter = filterID != nil
 
-        if terms.isEmpty {
-            return (nsfwEnabled || shouldUseNativeFilter) ? "*" : "safe"
+        if !nsfwEnabled {
+            let ratingTags = [
+                "safe",
+                "suggestive",
+                "questionable",
+                "explicit",
+                "grimdark",
+                "grotesque"
+            ]
+
+            terms.removeAll { term in
+                ratingTags.contains {
+                    term.caseInsensitiveCompare($0) == .orderedSame
+                }
+            }
+
+            terms.append("safe")
         }
 
-        if !nsfwEnabled,
-           !shouldUseNativeFilter,
-           !terms.contains(where: { $0.caseInsensitiveCompare("safe") == .orderedSame }) {
-            terms.append("safe")
+        if terms.isEmpty {
+            return "*"
         }
 
         return terms.joined(separator: ", ")

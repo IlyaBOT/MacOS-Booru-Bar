@@ -2,11 +2,13 @@ import Foundation
 
 struct LegacyGelbooruClient: BooruClient {
     private let site: BooruSite
+    private let filterID: Int?
     private let session: URLSession
     private let sitePageSize = 20
 
-    init(site: BooruSite, session: URLSession = .shared) {
+    init(site: BooruSite, filterID: Int? = nil, session: URLSession = .shared) {
         self.site = site
+        self.filterID = filterID
         self.session = session
     }
 
@@ -48,21 +50,16 @@ struct LegacyGelbooruClient: BooruClient {
         var itemsToDrop = logicalOffset - siteOffset
         var images: [BooruImage] = []
         var requestCount = 0
+        let effectiveTags = queryWithFilter(tags, nsfwEnabled: nsfwEnabled)
 
         while images.count < desiredCount, requestCount < 8 {
             requestCount += 1
-            let html = try await fetchHTML(tags: tags, offset: siteOffset)
+            let html = try await fetchHTML(tags: effectiveTags, offset: siteOffset)
             var pageImages = parseListPage(html)
 
             if itemsToDrop > 0 {
                 pageImages = Array(pageImages.dropFirst(itemsToDrop))
                 itemsToDrop = 0
-            }
-
-            if !nsfwEnabled {
-                pageImages = pageImages.filter { image in
-                    image.rating?.caseInsensitiveCompare("safe") == .orderedSame
-                }
             }
 
             images.append(contentsOf: pageImages)
@@ -75,6 +72,28 @@ struct LegacyGelbooruClient: BooruClient {
         }
 
         return Array(images.prefix(desiredCount))
+    }
+
+    private func queryWithFilter(_ query: String, nsfwEnabled: Bool) -> String {
+        var terms = query
+            .split(separator: " ")
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+
+        let selectedRating = BooruFilterOption.ratingQuery(
+            for: site,
+            filterID: filterID
+        )
+
+        if !nsfwEnabled {
+            terms.removeAll { $0.lowercased().hasPrefix("rating:") }
+            terms.append(BooruFilterOption.safeRatingQuery(for: site))
+        } else if let selectedRating {
+            terms.removeAll { $0.lowercased().hasPrefix("rating:") }
+            terms.append(selectedRating)
+        }
+
+        return terms.joined(separator: " ")
     }
 
     private func fetchHTML(tags: String, offset: Int) async throws -> String {
