@@ -46,9 +46,7 @@ struct MobileCommentsSheetHost: View {
                 .frame(maxWidth: .infinity)
                 .frame(height: targetHeight)
                 .background(Color(uiColor: .systemBackground))
-                .clipShape(
-                    RoundedRectangle(cornerRadius: 22, style: .continuous)
-                )
+                .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
                 .shadow(radius: 18)
                 .offset(y: interactiveOffset)
                 .animation(.spring(response: 0.28, dampingFraction: 0.86), value: expanded)
@@ -157,9 +155,7 @@ struct MobileCommentsView: View {
                 .font(.subheadline)
             }
 
-            Button {
-                onDismiss()
-            } label: {
+            Button { onDismiss() } label: {
                 Image(systemName: "xmark.circle.fill")
                     .font(.title3)
                     .foregroundColor(.secondary)
@@ -174,8 +170,7 @@ struct MobileCommentsView: View {
             LazyVStack(spacing: 0) {
                 ForEach(sortedComments) { comment in
                     commentRow(comment)
-                    Divider()
-                        .padding(.leading, 60)
+                    Divider().padding(.leading, 60)
                 }
             }
         }
@@ -256,8 +251,7 @@ struct MobileCommentsView: View {
                         .opacity(loadingVoteCommentID == comment.id ? 0.25 : 1)
 
                     if loadingVoteCommentID == comment.id {
-                        ProgressView()
-                            .scaleEffect(0.55)
+                        ProgressView().scaleEffect(0.55)
                     }
                 }
                 Text("\(comment.score ?? 0)")
@@ -283,8 +277,7 @@ struct MobileCommentsView: View {
                         Image(systemName: "paperplane.fill")
                             .opacity(isSending ? 0.2 : 1)
                         if isSending {
-                            ProgressView()
-                                .scaleEffect(0.65)
+                            ProgressView().scaleEffect(0.65)
                         }
                     }
                     .frame(width: 30, height: 30)
@@ -346,7 +339,12 @@ struct MobileCommentsView: View {
         defer { isLoading = false }
 
         do {
-            comments = try await api.fetchComments(imageID: image.id)
+            if site.apiType == .gelbooru {
+                comments = try await GelbooruCommentsClient(site: site, settingsStore: settingsStore)
+                    .fetchComments(postID: image.id)
+            } else {
+                comments = try await api.fetchComments(imageID: image.id)
+            }
             onCommentCountChanged?(comments.count)
             errorMessage = nil
         } catch {
