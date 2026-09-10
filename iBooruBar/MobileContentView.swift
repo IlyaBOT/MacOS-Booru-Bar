@@ -31,7 +31,9 @@ struct MobileContentView: View {
 
                 MobileGalleryView(
                     viewModel: viewModel,
-                    playAnimatedMedia: settingsStore.playAnimatedMedia
+                    playAnimatedMedia: settingsStore.playAnimatedMedia,
+                    site: selectedSite,
+                    settingsStore: settingsStore
                 )
             }
             .padding(.horizontal, 12)
