@@ -1,5 +1,6 @@
 import SwiftUI
 
+@available(macOS 12.0, *)
 struct SearchView: View {
     @ObservedObject var viewModel: GalleryViewModel
 
