@@ -29,11 +29,11 @@ struct MobileSiteEditorView: View {
         _name = State(initialValue: site?.name ?? "")
         _baseURLString = State(initialValue: site?.baseURL.absoluteString ?? "https://")
         _apiType = State(initialValue: initialSite.apiType)
-        _authenticationMode = State(initialValue: site.map(settingsStore.authenticationMode(for:)) ?? .none)
-        _username = State(initialValue: site.flatMap(settingsStore.username(for:)) ?? "")
-        _password = State(initialValue: site.flatMap(settingsStore.password(for:)) ?? "")
-        _userID = State(initialValue: site.flatMap(settingsStore.userID(for:)) ?? "")
-        _apiKey = State(initialValue: site.flatMap(settingsStore.apiKey(for:)) ?? "")
+        _authenticationMode = State(initialValue: site.map { settingsStore.authenticationMode(for: $0) } ?? .none)
+        _username = State(initialValue: site.flatMap { settingsStore.username(for: $0) } ?? "")
+        _password = State(initialValue: site.flatMap { settingsStore.password(for: $0) } ?? "")
+        _userID = State(initialValue: site.flatMap { settingsStore.userID(for: $0) } ?? "")
+        _apiKey = State(initialValue: site.flatMap { settingsStore.apiKey(for: $0) } ?? "")
     }
 
     var body: some View {
@@ -106,10 +106,6 @@ struct MobileSiteEditorView: View {
                 Button("Save") { save() }
                     .disabled(!canSave)
             }
-        }
-        .onChange(of: apiType) { _ in
-            // Credentials are intentionally retained when switching API type,
-            // but the UI immediately shows the fields required by the new API.
         }
     }
 
