@@ -1,5 +1,6 @@
 import SwiftUI
 
+@available(macOS 12.0, *)
 struct GalleryView: View {
     @ObservedObject var viewModel: GalleryViewModel
     let playAnimatedMedia: Bool
@@ -116,6 +117,7 @@ private struct GalleryScrollOffsetPreferenceKey: PreferenceKey {
     }
 }
 
+@available(macOS 12.0, *)
 private struct GalleryMessageView: View {
     let systemImage: String
     let message: String
