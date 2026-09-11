@@ -28,6 +28,10 @@ struct SettingsView: View {
     @State private var errorMessage: String?
     @State private var didLoadDrafts = false
 
+    private let settingsSiteScrollbarThreshold = 14
+    private let settingsSiteRowHeight: CGFloat = 28
+    private let settingsSiteRowSpacing: CGFloat = 2
+
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             header
@@ -103,31 +107,58 @@ struct SettingsView: View {
                 .help("Delete custom booru site")
             }
 
-            List(selection: $selectedSiteID) {
-                ForEach(draftSites) { site in
-                    HStack(spacing: 5) {
-                        Text(site.name)
-                            .lineLimit(1)
-                            .truncationMode(.tail)
+            ScrollView(
+                .vertical,
+                showsIndicators: draftSites.count > settingsSiteScrollbarThreshold
+            ) {
+                LazyVStack(spacing: settingsSiteRowSpacing) {
+                    ForEach(draftSites) { site in
+                        Button {
+                            selectedSiteID = site.id
+                        } label: {
+                            HStack(spacing: 5) {
+                                Text(site.name)
+                                    .lineLimit(1)
+                                    .truncationMode(.tail)
 
-                        Spacer(minLength: 4)
+                                Spacer(minLength: 4)
 
-                        Text(site.resolvedProtocol.displayName)
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
+                                Text(site.resolvedProtocol.displayName)
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                                    .lineLimit(1)
 
-                        if (draftAuthenticationModes[site.id] ?? .none) != .none {
-                            Image(systemName: authenticationIcon(for: site.id))
-                                .font(.caption2)
-                                .foregroundStyle(.secondary)
+                                if (draftAuthenticationModes[site.id] ?? .none) != .none {
+                                    Image(systemName: authenticationIcon(for: site.id))
+                                        .font(.caption2)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                            .frame(height: settingsSiteRowHeight)
+                            .padding(.horizontal, 7)
+                            .background(
+                                selectedSiteID == site.id
+                                    ? Color.accentColor.opacity(0.22)
+                                    : Color.clear
+                            )
+                            .clipShape(RoundedRectangle(cornerRadius: 5, style: .continuous))
+                            .contentShape(Rectangle())
                         }
+                        .buttonStyle(.plain)
+                        .id(site.id)
                     }
-                    .tag(Optional(site.id))
                 }
+                .padding(4)
+            }
+            .frame(maxHeight: .infinity)
+            .background(Color(nsColor: .controlBackgroundColor))
+            .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    .stroke(Color(nsColor: .separatorColor), lineWidth: 0.5)
             }
         }
-        .frame(width: 180)
+        .frame(width: 180, maxHeight: .infinity)
     }
 
     @ViewBuilder
