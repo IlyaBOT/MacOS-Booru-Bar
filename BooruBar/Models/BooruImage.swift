@@ -12,6 +12,50 @@ struct BooruImage: Identifiable, Codable, Equatable {
     let score: Int?
     let tags: [String]
     let rating: String?
+    let upvotes: Int?
+    let downvotes: Int?
+    let commentCount: Int?
+    let userVote: BooruVoteState?
+
+    init(
+        id: Int,
+        authorName: String?,
+        pageURL: URL,
+        previewURL: URL?,
+        imageURL: URL?,
+        mediaKind: BooruMediaKind,
+        width: Int?,
+        height: Int?,
+        score: Int?,
+        tags: [String],
+        rating: String?,
+        upvotes: Int? = nil,
+        downvotes: Int? = nil,
+        commentCount: Int? = nil,
+        userVote: BooruVoteState? = nil
+    ) {
+        self.id = id
+        self.authorName = authorName
+        self.pageURL = pageURL
+        self.previewURL = previewURL
+        self.imageURL = imageURL
+        self.mediaKind = mediaKind
+        self.width = width
+        self.height = height
+        self.score = score
+        self.tags = tags
+        self.rating = rating
+        self.upvotes = upvotes
+        self.downvotes = downvotes
+        self.commentCount = commentCount
+        self.userVote = userVote
+    }
+}
+
+enum BooruVoteState: Int, Codable, Equatable {
+    case down = -1
+    case none = 0
+    case up = 1
 }
 
 enum BooruMediaKind: String, Codable, Equatable {

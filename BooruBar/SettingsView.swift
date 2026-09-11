@@ -1,5 +1,6 @@
 import SwiftUI
 
+@available(macOS 12.0, *)
 struct SettingsView: View {
     @ObservedObject var settingsStore: SettingsStore
     let onDone: () -> Void

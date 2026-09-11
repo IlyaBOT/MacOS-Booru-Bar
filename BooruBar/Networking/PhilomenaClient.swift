@@ -104,7 +104,14 @@ struct PhilomenaClient: BooruClient {
 
         do {
             let decoded = try decoder.decode(PhilomenaSearchResponse.self, from: data)
-            return decoded.images.compactMap(mapImage)
+            let voteByImageID = decoded.interactions.reduce(into: [Int: BooruVoteState]()) { result, interaction in
+                guard interaction.interactionType == "voted", let imageID = interaction.imageID else { return }
+                if interaction.value == "up" { result[imageID] = .up }
+                else if interaction.value == "down" { result[imageID] = .down }
+            }
+            return decoded.images.compactMap { image in
+                mapImage(image, userVote: image.id.flatMap { voteByImageID[$0] })
+            }
         } catch {
             throw BooruNetworkError.decoding(error)
         }
@@ -115,22 +122,34 @@ struct PhilomenaClient: BooruClient {
             .split(separator: ",")
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
-        let shouldUseNativeFilter = filterID != nil
 
-        if terms.isEmpty {
-            return (nsfwEnabled || shouldUseNativeFilter) ? "*" : "safe"
+        if !nsfwEnabled {
+            let ratingTags = [
+                "safe",
+                "suggestive",
+                "questionable",
+                "explicit",
+                "grimdark",
+                "grotesque"
+            ]
+
+            terms.removeAll { term in
+                ratingTags.contains {
+                    term.caseInsensitiveCompare($0) == .orderedSame
+                }
+            }
+
+            terms.append("safe")
         }
 
-        if !nsfwEnabled,
-           !shouldUseNativeFilter,
-           !terms.contains(where: { $0.caseInsensitiveCompare("safe") == .orderedSame }) {
-            terms.append("safe")
+        if terms.isEmpty {
+            return "*"
         }
 
         return terms.joined(separator: ", ")
     }
 
-    private func mapImage(_ image: PhilomenaImageDTO) -> BooruImage? {
+    private func mapImage(_ image: PhilomenaImageDTO, userVote: BooruVoteState?) -> BooruImage? {
         guard let id = image.id else {
             return nil
         }
@@ -160,7 +179,11 @@ struct PhilomenaClient: BooruClient {
             height: image.height,
             score: image.score,
             tags: image.tags,
-            rating: rating(from: image.tags)
+            rating: rating(from: image.tags),
+            upvotes: image.upvotes,
+            downvotes: image.downvotes,
+            commentCount: image.commentCount,
+            userVote: userVote
         )
     }
 
@@ -215,6 +238,27 @@ struct PhilomenaClient: BooruClient {
 
 private struct PhilomenaSearchResponse: Decodable {
     let images: [PhilomenaImageDTO]
+    let interactions: [PhilomenaInteractionDTO]
+
+    enum CodingKeys: String, CodingKey { case images, interactions }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        images = (try? container.decode([PhilomenaImageDTO].self, forKey: .images)) ?? []
+        interactions = (try? container.decode([PhilomenaInteractionDTO].self, forKey: .interactions)) ?? []
+    }
+}
+
+private struct PhilomenaInteractionDTO: Decodable {
+    let imageID: Int?
+    let interactionType: String?
+    let value: String?
+
+    enum CodingKeys: String, CodingKey {
+        case imageID = "image_id"
+        case interactionType = "interaction_type"
+        case value
+    }
 }
 
 private struct PhilomenaImageDTO: Decodable {
@@ -223,6 +267,9 @@ private struct PhilomenaImageDTO: Decodable {
     let representations: [String: String]
     let tags: [String]
     let score: Int?
+    let upvotes: Int?
+    let downvotes: Int?
+    let commentCount: Int?
     let width: Int?
     let height: Int?
     let uploader: String?
@@ -234,6 +281,9 @@ private struct PhilomenaImageDTO: Decodable {
         case representations
         case tags
         case score
+        case upvotes
+        case downvotes
+        case commentCount = "comment_count"
         case width
         case height
         case uploader
@@ -247,6 +297,9 @@ private struct PhilomenaImageDTO: Decodable {
         representations = (try? container.decodeIfPresent([String: String].self, forKey: .representations)) ?? [:]
         tags = container.decodeTags(forKey: .tags)
         score = container.decodeLossyInt(forKey: .score)
+        upvotes = container.decodeLossyInt(forKey: .upvotes)
+        downvotes = container.decodeLossyInt(forKey: .downvotes)
+        commentCount = container.decodeLossyInt(forKey: .commentCount)
         width = container.decodeLossyInt(forKey: .width)
         height = container.decodeLossyInt(forKey: .height)
         uploader = try? container.decodeIfPresent(String.self, forKey: .uploader)

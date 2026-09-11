@@ -3,12 +3,14 @@ import Foundation
 struct GelbooruDapiClient: BooruClient {
     private let site: BooruSite
     private let apiCredential: String?
+    private let filterID: Int?
     private let session: URLSession
     private let decoder = JSONDecoder()
 
-    init(site: BooruSite, apiKey: String? = nil, session: URLSession = .shared) {
+    init(site: BooruSite, apiKey: String? = nil, filterID: Int? = nil, session: URLSession = .shared) {
         self.site = site
         self.apiCredential = apiKey?.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty
+        self.filterID = filterID
         self.session = session
     }
 
@@ -106,9 +108,17 @@ struct GelbooruDapiClient: BooruClient {
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
 
+        let selectedRating = BooruFilterOption.ratingQuery(
+            for: site,
+            filterID: filterID
+        )
+
         if !nsfwEnabled {
             terms.removeAll { $0.lowercased().hasPrefix("rating:") }
-            terms.append("rating:safe")
+            terms.append(BooruFilterOption.safeRatingQuery(for: site))
+        } else if let selectedRating {
+            terms.removeAll { $0.lowercased().hasPrefix("rating:") }
+            terms.append(selectedRating)
         }
 
         return terms.joined(separator: " ")

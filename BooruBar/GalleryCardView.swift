@@ -2,6 +2,7 @@ import AppKit
 import SwiftUI
 import WebKit
 
+@available(macOS 12.0, *)
 struct GalleryCardView: View {
     let image: BooruImage
     let playAnimatedMedia: Bool
@@ -10,6 +11,7 @@ struct GalleryCardView: View {
     private let fallbackPreviewWidth: CGFloat = 400
     private let maxPreviewHeight: CGFloat = 648
     private let collapsedTagLimit = 6
+    private let tagSpacing: CGFloat = 6
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -195,22 +197,84 @@ struct GalleryCardView: View {
     }
 
     private var tagList: some View {
-        TagFlowLayout(horizontalSpacing: 6, verticalSpacing: 6) {
-            ForEach(Array(visibleTags.enumerated()), id: \.offset) { _, tag in
-                tagChip(tag)
-            }
-
-            if image.tags.count > collapsedTagLimit {
-                Button {
-                    showsAllTags.toggle()
-                } label: {
-                    tagToggleLabel
+        VStack(alignment: .leading, spacing: tagSpacing) {
+            ForEach(Array(tagRows.enumerated()), id: \.offset) { _, row in
+                HStack(spacing: tagSpacing) {
+                    ForEach(row, id: \.self) { entry in
+                        switch entry {
+                        case .tag(_, let tag):
+                            tagChip(tag)
+                        case .toggle:
+                            Button {
+                                showsAllTags.toggle()
+                            } label: {
+                                tagToggleLabel
+                            }
+                            .buttonStyle(.plain)
+                            .help(showsAllTags ? "Collapse tags" : "Show all tags")
+                        }
+                    }
                 }
-                .buttonStyle(.plain)
-                .help(showsAllTags ? "Collapse tags" : "Show all tags")
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private var tagRows: [[TagFlowEntry]] {
+        let availableWidth = max(measuredContentWidth, fallbackPreviewWidth)
+        var rows: [[TagFlowEntry]] = []
+        var currentRow: [TagFlowEntry] = []
+        var currentWidth: CGFloat = 0
+
+        for entry in tagEntries {
+            let width = estimatedWidth(for: entry)
+            let proposedWidth = currentRow.isEmpty ? width : currentWidth + tagSpacing + width
+
+            if !currentRow.isEmpty, proposedWidth > availableWidth {
+                rows.append(currentRow)
+                currentRow = [entry]
+                currentWidth = width
+            } else {
+                currentRow.append(entry)
+                currentWidth = proposedWidth
+            }
+        }
+
+        if !currentRow.isEmpty {
+            rows.append(currentRow)
+        }
+
+        return rows
+    }
+
+    private var tagEntries: [TagFlowEntry] {
+        var entries = Array(visibleTags.enumerated()).map { index, tag in
+            TagFlowEntry.tag(index, tag)
+        }
+
+        if image.tags.count > collapsedTagLimit {
+            entries.append(.toggle)
+        }
+
+        return entries
+    }
+
+    private func estimatedWidth(for entry: TagFlowEntry) -> CGFloat {
+        let text: String
+        let weight: NSFont.Weight
+
+        switch entry {
+        case .tag(_, let tag):
+            text = tag
+            weight = .regular
+        case .toggle:
+            text = showsAllTags ? "^" : "+\(image.tags.count - collapsedTagLimit)"
+            weight = .semibold
+        }
+
+        let font = NSFont.systemFont(ofSize: NSFont.smallSystemFontSize, weight: weight)
+        let textWidth = ceil((text as NSString).size(withAttributes: [.font: font]).width)
+        return textWidth + 14
     }
 
     private var visibleTags: [String] {
@@ -244,62 +308,16 @@ struct GalleryCardView: View {
     }
 }
 
+private enum TagFlowEntry: Hashable {
+    case tag(Int, String)
+    case toggle
+}
+
 private struct GalleryCardContentWidthPreferenceKey: PreferenceKey {
     static var defaultValue: CGFloat = 0
 
     static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
         value = nextValue()
-    }
-}
-
-private struct TagFlowLayout: Layout {
-    var horizontalSpacing: CGFloat
-    var verticalSpacing: CGFloat
-
-    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-        arrangeSubviews(proposal: proposal, subviews: subviews).size
-    }
-
-    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-        let arrangement = arrangeSubviews(proposal: proposal, subviews: subviews)
-
-        for index in subviews.indices {
-            subviews[index].place(
-                at: CGPoint(
-                    x: bounds.minX + arrangement.positions[index].x,
-                    y: bounds.minY + arrangement.positions[index].y
-                ),
-                proposal: .unspecified
-            )
-        }
-    }
-
-    private func arrangeSubviews(proposal: ProposedViewSize, subviews: Subviews) -> (size: CGSize, positions: [CGPoint]) {
-        let proposedWidth = proposal.width ?? .greatestFiniteMagnitude
-        let maxWidth = proposedWidth > 0 ? proposedWidth : .greatestFiniteMagnitude
-        var positions: [CGPoint] = []
-        var origin = CGPoint.zero
-        var lineHeight: CGFloat = 0
-        var layoutWidth: CGFloat = 0
-
-        for subview in subviews {
-            let size = subview.sizeThatFits(.unspecified)
-
-            if origin.x > 0, origin.x + size.width > maxWidth {
-                origin.x = 0
-                origin.y += lineHeight + verticalSpacing
-                lineHeight = 0
-            }
-
-            positions.append(origin)
-            layoutWidth = max(layoutWidth, origin.x + size.width)
-            lineHeight = max(lineHeight, size.height)
-            origin.x += size.width + horizontalSpacing
-        }
-
-        let width = proposal.width ?? layoutWidth
-        let height = positions.isEmpty ? 0 : origin.y + lineHeight
-        return (CGSize(width: width, height: height), positions)
     }
 }
 
