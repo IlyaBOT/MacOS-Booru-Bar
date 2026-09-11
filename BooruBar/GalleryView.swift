@@ -4,6 +4,9 @@ import SwiftUI
 struct GalleryView: View {
     @ObservedObject var viewModel: GalleryViewModel
     let playAnimatedMedia: Bool
+    let site: BooruSite?
+    @ObservedObject var settingsStore: SettingsStore
+
     @State private var lastScrollOffset: CGFloat?
     @State private var scrollDirection: GalleryScrollDirection = .idle
 
@@ -30,10 +33,21 @@ struct GalleryView: View {
                 }
 
                 ForEach(viewModel.images) { image in
-                    GalleryCardView(image: image, playAnimatedMedia: playAnimatedMedia)
-                        .onAppear {
-                            handleAppearance(of: image)
-                        }
+                    VStack(spacing: 6) {
+                        GalleryCardView(
+                            image: image,
+                            playAnimatedMedia: playAnimatedMedia
+                        )
+
+                        MacInteractionBarView(
+                            image: image,
+                            site: site,
+                            settingsStore: settingsStore
+                        )
+                    }
+                    .onAppear {
+                        handleAppearance(of: image)
+                    }
                 }
 
                 if viewModel.isLoading {
