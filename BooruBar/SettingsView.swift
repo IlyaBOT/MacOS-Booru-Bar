@@ -13,7 +13,7 @@ struct SettingsView: View {
     @State private var name = ""
     @State private var baseURLString = ""
     @State private var apiKey = ""
-    @State private var apiType: BooruAPIType = .philomena
+    @State private var apiType: BooruProtocol = .philomena
     @State private var errorMessage: String?
     @State private var didLoadDrafts = false
 
@@ -93,7 +93,7 @@ struct SettingsView: View {
 
                         Spacer()
 
-                        Text(site.apiType.displayName)
+                        Text(site.resolvedProtocol.displayName)
                             .font(.caption)
                             .foregroundStyle(.secondary)
 
@@ -146,7 +146,7 @@ struct SettingsView: View {
                     .foregroundStyle(.secondary)
 
                 Picker("API", selection: $apiType) {
-                    ForEach(BooruAPIType.allCases) { apiType in
+                    ForEach(BooruProtocol.allCases) { apiType in
                         Text(apiType.displayName).tag(apiType)
                     }
                 }
@@ -217,10 +217,14 @@ struct SettingsView: View {
         switch apiType {
         case .philomena:
             return "API key (optional)"
-        case .e621:
+        case .e621, .danbooru:
             return "username:api_key (optional)"
         case .gelbooru:
             return "user_id:api_key (Gelbooru may require this)"
+        case .moebooru:
+            return "Authentication not required for browsing"
+        case .shimmie:
+            return "Authentication is server-specific (optional)"
         }
     }
 
@@ -296,7 +300,7 @@ struct SettingsView: View {
         isAddingSite = false
         name = site.name
         baseURLString = site.baseURL.absoluteString
-        apiType = site.apiType
+        apiType = site.resolvedProtocol
         apiKey = draftAPIKeys[site.id] ?? ""
         errorMessage = nil
     }
@@ -345,30 +349,22 @@ struct SettingsView: View {
             return nil
         }
 
-        let resolvedAPIType = detectedAPIType(for: trimmedBaseURL) ?? apiType
+        let resolvedAPIType = BooruProtocol.detected(from: baseURL) ?? apiType
         return BooruSite(
             id: id,
             name: trimmedName,
             baseURL: baseURL,
-            apiType: resolvedAPIType,
+            apiType: resolvedAPIType.legacyAPIType,
+            protocolType: resolvedAPIType,
             hasAPIKey: !apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         )
     }
 
-    private func detectedAPIType(for baseURLString: String) -> BooruAPIType? {
-        guard let host = URL(string: baseURLString)?.host?.lowercased() else {
+    private func detectedAPIType(for baseURLString: String) -> BooruProtocol? {
+        guard let url = URL(string: baseURLString) else {
             return nil
         }
-
-        if host.contains("e621.net") {
-            return .e621
-        }
-
-        if host.contains("gelbooru") || host.contains("safebooru") || host.hasSuffix(".booru.org") {
-            return .gelbooru
-        }
-
-        return nil
+        return BooruProtocol.detected(from: url)
     }
 
     private func applyAndClose() {

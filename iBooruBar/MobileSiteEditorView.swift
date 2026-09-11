@@ -8,7 +8,7 @@ struct MobileSiteEditorView: View {
 
     @State private var name: String
     @State private var baseURLString: String
-    @State private var apiType: BooruAPIType
+    @State private var apiType: BooruProtocol
     @State private var authenticationMode: BooruAuthenticationMode
     @State private var username: String
     @State private var password: String
@@ -23,12 +23,13 @@ struct MobileSiteEditorView: View {
         let initialSite = site ?? BooruSite(
             name: "",
             baseURL: URL(string: "https://example.com")!,
-            apiType: .philomena
+            apiType: .philomena,
+            protocolType: .philomena
         )
 
         _name = State(initialValue: site?.name ?? "")
         _baseURLString = State(initialValue: site?.baseURL.absoluteString ?? "https://")
-        _apiType = State(initialValue: initialSite.apiType)
+        _apiType = State(initialValue: initialSite.resolvedProtocol)
         _authenticationMode = State(initialValue: site.map { settingsStore.authenticationMode(for: $0) } ?? .none)
         _username = State(initialValue: site.flatMap { settingsStore.username(for: $0) } ?? "")
         _password = State(initialValue: site.flatMap { settingsStore.password(for: $0) } ?? "")
@@ -48,7 +49,7 @@ struct MobileSiteEditorView: View {
                     .autocorrectionDisabled()
 
                 Picker("API Type", selection: $apiType) {
-                    ForEach(BooruAPIType.allCases) { type in
+                    ForEach(BooruProtocol.allCases) { type in
                         Text(type.displayName).tag(type)
                     }
                 }
@@ -83,6 +84,14 @@ struct MobileSiteEditorView: View {
                 Text(authenticationFooter)
             }
 
+            if apiType == .shimmie {
+                Section {
+                    Text("Shimmie does not define a universal rating field. The global NSFW filter cannot be guaranteed for arbitrary Shimmie installations.")
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
+                }
+            }
+
             if let errorMessage {
                 Section {
                     Text(errorMessage)
@@ -107,12 +116,19 @@ struct MobileSiteEditorView: View {
                     .disabled(!canSave)
             }
         }
+        .onChange(of: baseURLString) { newValue in
+            guard let url = URL(string: newValue),
+                  let detected = BooruProtocol.detected(from: url) else {
+                return
+            }
+            apiType = detected
+        }
     }
 
     @ViewBuilder
     private var apiKeyFields: some View {
         switch apiType {
-        case .e621:
+        case .e621, .danbooru:
             TextField("Username", text: $username)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
@@ -125,6 +141,9 @@ struct MobileSiteEditorView: View {
 
         case .philomena:
             SecureField("API Key", text: $apiKey)
+
+        case .moebooru, .shimmie:
+            SecureField("API Key / Token (optional)", text: $apiKey)
         }
     }
 
@@ -138,10 +157,21 @@ struct MobileSiteEditorView: View {
         switch apiType {
         case .e621:
             return "e621 API actions use HTTP Basic authentication with your username and API key. Password credentials cannot vote or post comments through the API."
+
         case .philomena:
             return "Philomena API keys authenticate JSON reads and expose your image interaction state. Voting and posting comments are browser-session routes and are not exposed as public token API actions."
+
         case .gelbooru:
             return "Gelbooru DAPI uses User ID + API Key for authenticated reads. Stable public write endpoints for votes/comments are not documented."
+
+        case .moebooru:
+            return "Moebooru /post.json browsing is anonymous. Legacy account authentication differs between installations and is not required for browsing."
+
+        case .danbooru:
+            return "Danbooru API authentication uses your username and API key over HTTP Basic. Browsing works anonymously; authenticated write actions are not enabled yet."
+
+        case .shimmie:
+            return "Shimmie browsing uses the Danbooru Client API extension. Authentication and write APIs are installation-specific, so this integration is read-only."
         }
     }
 
@@ -166,13 +196,16 @@ struct MobileSiteEditorView: View {
             return
         }
 
+        let resolvedAPIType = BooruProtocol.detected(from: baseURL) ?? apiType
         let site = BooruSite(
             id: existingSite?.id ?? UUID(),
             name: name.trimmingCharacters(in: .whitespacesAndNewlines),
             baseURL: baseURL,
-            apiType: apiType,
+            apiType: resolvedAPIType.legacyAPIType,
+            protocolType: resolvedAPIType,
             hasAPIKey: !apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         )
+        let previousSelectedSiteID = settingsStore.selectedSiteID
 
         do {
             try settingsStore.upsertSite(site, apiKey: apiKey)
@@ -184,6 +217,13 @@ struct MobileSiteEditorView: View {
                 userID: userID,
                 apiKey: apiKey
             )
+
+            if existingSite != nil,
+               previousSelectedSiteID != site.id,
+               settingsStore.sites.contains(where: { $0.id == previousSelectedSiteID }) {
+                settingsStore.selectedSiteID = previousSelectedSiteID
+            }
+
             presentationMode.wrappedValue.dismiss()
         } catch {
             errorMessage = error.localizedDescription

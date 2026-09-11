@@ -11,7 +11,7 @@ struct BooruFilterOption: Identifiable, Hashable {
         self.requiresNSFW = requiresNSFW
     }
 
-    // Keep the existing macOS filter list behavior unchanged.
+    // Keep the existing macOS Philomena filter list behavior unchanged.
     static func options(for site: BooruSite?) -> [BooruFilterOption] {
         guard let host = site?.baseURL.host?.lowercased() else {
             return []
@@ -35,14 +35,23 @@ struct BooruFilterOption: Identifiable, Hashable {
             return []
         }
 
-        switch site.apiType {
+        switch site.resolvedProtocol {
         case .philomena:
             return options(for: site)
 
-        case .e621:
+        case .e621, .moebooru:
             return [
                 BooruFilterOption(id: allRatingsID, name: "All"),
                 BooruFilterOption(id: safeRatingID, name: "Safe"),
+                BooruFilterOption(id: questionableRatingID, name: "Questionable", requiresNSFW: true),
+                BooruFilterOption(id: explicitRatingID, name: "Explicit", requiresNSFW: true)
+            ]
+
+        case .danbooru:
+            return [
+                BooruFilterOption(id: allRatingsID, name: "All"),
+                BooruFilterOption(id: generalRatingID, name: "General"),
+                BooruFilterOption(id: sensitiveRatingID, name: "Sensitive", requiresNSFW: true),
                 BooruFilterOption(id: questionableRatingID, name: "Questionable", requiresNSFW: true),
                 BooruFilterOption(id: explicitRatingID, name: "Explicit", requiresNSFW: true)
             ]
@@ -64,6 +73,12 @@ struct BooruFilterOption: Identifiable, Hashable {
                 BooruFilterOption(id: questionableRatingID, name: "Questionable", requiresNSFW: true),
                 BooruFilterOption(id: explicitRatingID, name: "Explicit", requiresNSFW: true)
             ]
+
+        case .shimmie:
+            // Shimmie core does not define a standardized rating field. Sites
+            // can add their own rating extensions, so a universal preset would
+            // silently hide valid posts on many installations.
+            return [BooruFilterOption(id: allRatingsID, name: "All")]
         }
     }
 
@@ -72,7 +87,7 @@ struct BooruFilterOption: Identifiable, Hashable {
         apiKey: String?,
         session: URLSession = .shared
     ) async throws -> [BooruFilterOption] {
-        guard site.apiType == .philomena else {
+        guard site.resolvedProtocol == .philomena else {
             return mobileFallbackOptions(for: site)
         }
 
@@ -107,13 +122,27 @@ struct BooruFilterOption: Identifiable, Hashable {
             return nil
         }
 
-        switch site.apiType {
-        case .philomena:
+        switch site.resolvedProtocol {
+        case .philomena, .shimmie:
             return nil
 
-        case .e621:
+        case .e621, .moebooru:
             switch filterID {
             case safeRatingID:
+                return "rating:s"
+            case questionableRatingID:
+                return "rating:q"
+            case explicitRatingID:
+                return "rating:e"
+            default:
+                return nil
+            }
+
+        case .danbooru:
+            switch filterID {
+            case generalRatingID:
+                return "rating:g"
+            case sensitiveRatingID:
                 return "rating:s"
             case questionableRatingID:
                 return "rating:q"
@@ -142,13 +171,17 @@ struct BooruFilterOption: Identifiable, Hashable {
     }
 
     static func safeRatingQuery(for site: BooruSite) -> String {
-        switch site.apiType {
+        switch site.resolvedProtocol {
         case .philomena:
             return "safe"
-        case .e621:
+        case .e621, .moebooru:
             return "rating:s"
+        case .danbooru:
+            return "rating:g"
         case .gelbooru:
             return isModernGelbooru(site) ? "rating:general" : "rating:safe"
+        case .shimmie:
+            return ""
         }
     }
 

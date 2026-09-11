@@ -192,7 +192,22 @@ struct MobileGalleryCardView: View {
                 canVoteComments: false
             )
         }
-        return BooruInteractionAPI(site: site, settingsStore: settingsStore).capabilities
+
+        // The interaction layer currently has dedicated implementations for
+        // Philomena, e621 and Gelbooru only. Do not route Danbooru/Moebooru/
+        // Shimmie through Gelbooru merely because their legacy stored API type
+        // is `.gelbooru` for backward compatibility.
+        switch site.resolvedProtocol {
+        case .moebooru, .danbooru, .shimmie:
+            return BooruInteractionCapabilities(
+                canReadComments: false,
+                canCreateComments: false,
+                canVotePosts: false,
+                canVoteComments: false
+            )
+        case .philomena, .e621, .gelbooru:
+            return BooruInteractionAPI(site: site, settingsStore: settingsStore).capabilities
+        }
     }
 
     private var interactionTaskID: String {

@@ -209,8 +209,10 @@ final class GalleryViewModel: ObservableObject {
         }
 
         do {
-            let apiKey = settingsStore.apiKey(for: site)
-            let client = makeClient(for: site, apiKey: apiKey)
+            // Existing e621/Gelbooru clients expect composed credentials
+            // (username:key / userID:key), not the raw API key alone.
+            let apiCredential = settingsStore.apiCredential(for: site)
+            let client = makeClient(for: site, apiKey: apiCredential)
             let fetchedImages: [BooruImage]
 
             switch currentTab {
@@ -256,7 +258,7 @@ final class GalleryViewModel: ObservableObject {
     private func makeClient(for site: BooruSite, apiKey: String?) -> BooruClient {
         let filterID = settingsStore.selectedFilterID(for: site)
 
-        switch site.apiType {
+        switch site.resolvedProtocol {
         case .philomena:
             return PhilomenaClient(
                 site: site,
@@ -284,6 +286,22 @@ final class GalleryViewModel: ObservableObject {
                 apiKey: apiKey,
                 filterID: filterID
             )
+
+        case .moebooru:
+            return MoebooruClient(
+                site: site,
+                filterID: filterID
+            )
+
+        case .danbooru:
+            return DanbooruClient(
+                site: site,
+                apiKey: apiKey,
+                filterID: filterID
+            )
+
+        case .shimmie:
+            return ShimmieClient(site: site)
         }
     }
 

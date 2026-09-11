@@ -170,7 +170,7 @@ struct ContentView: View {
 
                         Spacer()
 
-                        Text(site.apiType.displayName)
+                        Text(site.resolvedProtocol.displayName)
                             .font(.caption)
                             .foregroundStyle(.secondary)
 

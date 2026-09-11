@@ -33,7 +33,7 @@ struct MobileSettingsView: View {
                                     Text(site.name)
 
                                     HStack(spacing: 4) {
-                                        Text(site.apiType.displayName)
+                                        Text(site.resolvedProtocol.displayName)
                                         Text("•")
                                         Text(settingsStore.authenticationMode(for: site).displayName)
                                     }

@@ -60,9 +60,9 @@ final class SettingsStore: ObservableObject {
         keychainStore.apiKey(for: site.id)
     }
 
-    /// Credential string expected by the existing backend clients. Older
-    /// builds stored e621/Gelbooru credentials as `name:key` / `id:key`; keep
-    /// accepting that layout while composing it from the new secure fields.
+    /// Credential string expected by backend clients. Older builds stored
+    /// e621/Gelbooru credentials as `name:key` / `id:key`; keep accepting that
+    /// layout while composing it from the secure per-field values.
     func apiCredential(for site: BooruSite) -> String? {
         guard authenticationMode(for: site) == .apiKey else { return nil }
         let rawKey = apiKey(for: site)?.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -70,16 +70,20 @@ final class SettingsStore: ObservableObject {
 
         if rawKey.contains(":") { return rawKey }
 
-        switch site.apiType {
-        case .philomena:
+        switch site.resolvedProtocol {
+        case .philomena, .moebooru, .shimmie:
             return rawKey
-        case .e621:
-            guard let username = username(for: site)?.trimmingCharacters(in: .whitespacesAndNewlines), !username.isEmpty else {
+
+        case .e621, .danbooru:
+            guard let username = username(for: site)?.trimmingCharacters(in: .whitespacesAndNewlines),
+                  !username.isEmpty else {
                 return rawKey
             }
             return "\(username):\(rawKey)"
+
         case .gelbooru:
-            guard let userID = userID(for: site)?.trimmingCharacters(in: .whitespacesAndNewlines), !userID.isEmpty else {
+            guard let userID = userID(for: site)?.trimmingCharacters(in: .whitespacesAndNewlines),
+                  !userID.isEmpty else {
                 return rawKey
             }
             return "\(userID):\(rawKey)"
@@ -110,17 +114,24 @@ final class SettingsStore: ObservableObject {
         switch authenticationMode(for: site) {
         case .none:
             return false
+
         case .apiKey:
-            switch site.apiType {
-            case .e621:
-                return !(username(for: site) ?? "").isEmpty && !(apiKey(for: site) ?? "").isEmpty
+            switch site.resolvedProtocol {
+            case .e621, .danbooru:
+                return !(username(for: site) ?? "").isEmpty
+                    && !(apiKey(for: site) ?? "").isEmpty
+
             case .gelbooru:
-                return !(userID(for: site) ?? "").isEmpty && !(apiKey(for: site) ?? "").isEmpty
-            case .philomena:
+                return !(userID(for: site) ?? "").isEmpty
+                    && !(apiKey(for: site) ?? "").isEmpty
+
+            case .philomena, .moebooru, .shimmie:
                 return !(apiKey(for: site) ?? "").isEmpty
             }
+
         case .credentials:
-            return !(username(for: site) ?? "").isEmpty && !(password(for: site) ?? "").isEmpty
+            return !(username(for: site) ?? "").isEmpty
+                && !(password(for: site) ?? "").isEmpty
         }
     }
 
@@ -256,20 +267,18 @@ final class SettingsStore: ObservableObject {
     private static func normalizedSites(_ sites: [BooruSite]) -> [BooruSite] {
         sites.map { site in
             var normalizedSite = site
-            if normalizedSite.id == e621SiteID || normalizedSite.baseURL.host?.lowercased().contains("e621.net") == true {
-                normalizedSite.apiType = .e621
-            } else if normalizedSite.baseURL.host.map(Self.isGelbooruHost) == true {
-                normalizedSite.apiType = .gelbooru
+
+            if let detected = BooruProtocol.detected(from: normalizedSite.baseURL) {
+                normalizedSite.protocolType = detected
+                normalizedSite.apiType = detected.legacyAPIType
+            } else if let storedProtocol = normalizedSite.protocolType {
+                normalizedSite.apiType = storedProtocol.legacyAPIType
+            } else {
+                normalizedSite.protocolType = BooruProtocol(legacyAPIType: normalizedSite.apiType)
             }
+
             return normalizedSite
         }
-    }
-
-    private static func isGelbooruHost(_ host: String) -> Bool {
-        let normalizedHost = host.lowercased()
-        return normalizedHost.contains("gelbooru")
-            || normalizedHost.contains("safebooru")
-            || normalizedHost.hasSuffix(".booru.org")
     }
 
     private enum Keys {
@@ -285,18 +294,23 @@ final class SettingsStore: ObservableObject {
         BooruSite(
             id: UUID(uuidString: "C3DE6F79-33CA-4DAB-81B1-F35A255B346A")!,
             name: "Derpibooru",
-            baseURL: URL(string: "https://derpibooru.org")!
+            baseURL: URL(string: "https://derpibooru.org")!,
+            apiType: .philomena,
+            protocolType: .philomena
         ),
         BooruSite(
             id: UUID(uuidString: "F673845A-DA5A-4AF4-BF3E-A535073F07A0")!,
             name: "Furbooru",
-            baseURL: URL(string: "https://furbooru.org")!
+            baseURL: URL(string: "https://furbooru.org")!,
+            apiType: .philomena,
+            protocolType: .philomena
         ),
         BooruSite(
             id: e621SiteID,
             name: "e621",
             baseURL: URL(string: "https://e621.net")!,
-            apiType: .e621
+            apiType: .e621,
+            protocolType: .e621
         )
     ]
 
