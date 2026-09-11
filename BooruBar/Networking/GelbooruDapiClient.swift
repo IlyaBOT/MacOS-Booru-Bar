@@ -160,9 +160,9 @@ struct GelbooruDapiClient: BooruClient {
             ?? absoluteURL(from: post.sampleURL)
             ?? absoluteURL(from: post.previewURL)
         let mediaKind = BooruMediaKind(url: imageURL)
-        let previewURL = absoluteURL(from: post.previewURL)
-            ?? absoluteURL(from: post.sampleURL)
+        let previewURL = absoluteURL(from: post.sampleURL)
             ?? absoluteURL(from: post.fileURL)
+            ?? absoluteURL(from: post.previewURL)
 
         return BooruImage(
             id: id,
