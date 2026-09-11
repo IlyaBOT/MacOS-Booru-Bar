@@ -6,12 +6,30 @@ import WebKit
 struct GalleryCardView: View {
     let image: BooruImage
     let playAnimatedMedia: Bool
+    let site: BooruSite?
+    @ObservedObject var settingsStore: SettingsStore
+    let onOpenComments: (BooruImage) -> Void
+
     @State private var measuredContentWidth: CGFloat = 0
     @State private var showsAllTags = false
     private let fallbackPreviewWidth: CGFloat = 400
     private let maxPreviewHeight: CGFloat = 648
     private let collapsedTagLimit = 6
     private let tagSpacing: CGFloat = 6
+
+    init(
+        image: BooruImage,
+        playAnimatedMedia: Bool,
+        site: BooruSite?,
+        settingsStore: SettingsStore,
+        onOpenComments: @escaping (BooruImage) -> Void
+    ) {
+        self.image = image
+        self.playAnimatedMedia = playAnimatedMedia
+        self.site = site
+        self.onOpenComments = onOpenComments
+        _settingsStore = ObservedObject(wrappedValue: settingsStore)
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -51,6 +69,17 @@ struct GalleryCardView: View {
             .onTapGesture(perform: openImagePage)
 
             tagList
+
+            Divider()
+
+            MacInteractionBarView(
+                image: image,
+                site: site,
+                settingsStore: settingsStore,
+                onOpenComments: {
+                    onOpenComments(image)
+                }
+            )
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .background {
