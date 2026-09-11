@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct MobileCommentsSheetHost: View {
     let image: BooruImage
@@ -7,73 +8,64 @@ struct MobileCommentsSheetHost: View {
     var onCommentCountChanged: ((Int) -> Void)?
     var onDismiss: () -> Void
 
-    @State private var expanded = false
-    @GestureState private var dragTranslation: CGFloat = 0
-
     var body: some View {
-        GeometryReader { geometry in
-            let collapsedHeight = min(max(geometry.size.height * 0.55, 340), 520)
-            let expandedHeight = max(geometry.size.height - 18, collapsedHeight)
-            let targetHeight = expanded ? expandedHeight : collapsedHeight
-            let interactiveOffset = max(0, dragTranslation)
+        MobileCommentsView(
+            image: image,
+            site: site,
+            settingsStore: settingsStore,
+            onCommentCountChanged: onCommentCountChanged,
+            onDismiss: onDismiss
+        )
+        .background(
+            MobileCommentsSheetConfigurator()
+                .frame(width: 0, height: 0)
+        )
+    }
+}
 
-            ZStack(alignment: .bottom) {
-                Color.black.opacity(0.28)
-                    .ignoresSafeArea()
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        onDismiss()
-                    }
-
-                VStack(spacing: 0) {
-                    Capsule()
-                        .fill(Color.secondary.opacity(0.45))
-                        .frame(width: 38, height: 5)
-                        .padding(.top, 8)
-                        .padding(.bottom, 5)
-                        .frame(maxWidth: .infinity)
-                        .contentShape(Rectangle())
-                        .gesture(sheetDragGesture)
-
-                    MobileCommentsView(
-                        image: image,
-                        site: site,
-                        settingsStore: settingsStore,
-                        onCommentCountChanged: onCommentCountChanged,
-                        onDismiss: onDismiss
-                    )
-                }
-                .frame(maxWidth: .infinity)
-                .frame(height: targetHeight)
-                .background(Color(uiColor: .systemBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
-                .shadow(radius: 18)
-                .offset(y: interactiveOffset)
-                .animation(.spring(response: 0.28, dampingFraction: 0.86), value: expanded)
-            }
-            .ignoresSafeArea(edges: .bottom)
-        }
-        .background(Color.clear)
+private struct MobileCommentsSheetConfigurator: UIViewControllerRepresentable {
+    func makeUIViewController(context: Context) -> ConfiguratorViewController {
+        ConfiguratorViewController()
     }
 
-    private var sheetDragGesture: some Gesture {
-        DragGesture(minimumDistance: 8)
-            .updating($dragTranslation) { value, state, _ in
-                state = max(0, value.translation.height)
-            }
-            .onEnded { value in
-                if expanded {
-                    if value.translation.height > 80 {
-                        expanded = false
-                    }
-                } else {
-                    if value.translation.height < -70 {
-                        expanded = true
-                    } else if value.translation.height > 105 {
-                        onDismiss()
-                    }
+    func updateUIViewController(_ uiViewController: ConfiguratorViewController, context: Context) {
+        uiViewController.configureIfNeeded()
+    }
+
+    final class ConfiguratorViewController: UIViewController {
+        private var didConfigure = false
+
+        override func viewDidLoad() {
+            super.viewDidLoad()
+            view.backgroundColor = .clear
+        }
+
+        override func viewDidAppear(_ animated: Bool) {
+            super.viewDidAppear(animated)
+            configureIfNeeded()
+        }
+
+        func configureIfNeeded() {
+            guard !didConfigure else { return }
+
+            var candidate: UIViewController? = self
+            while let current = candidate {
+                if let sheet = current.sheetPresentationController {
+                    sheet.detents = [.medium(), .large()]
+                    sheet.selectedDetentIdentifier = .medium
+                    sheet.prefersGrabberVisible = true
+                    sheet.prefersScrollingExpandsWhenScrolledToEdge = true
+                    sheet.preferredCornerRadius = 22
+                    didConfigure = true
+                    return
                 }
+                candidate = current.parent
             }
+
+            DispatchQueue.main.async { [weak self] in
+                self?.configureIfNeeded()
+            }
+        }
     }
 }
 
@@ -195,10 +187,7 @@ struct MobileCommentsView: View {
                     }
                 }
 
-                Text(comment.body)
-                    .font(.body)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .textSelection(.enabled)
+                commentBody(comment.body)
 
                 if comment.score != nil {
                     HStack {
@@ -212,31 +201,60 @@ struct MobileCommentsView: View {
         .padding(.vertical, 12)
     }
 
+    @ViewBuilder
+    private func commentBody(_ body: String) -> some View {
+        let segments = CommentBodyParser.parse(body)
+
+        VStack(alignment: .leading, spacing: 8) {
+            ForEach(Array(segments.enumerated()), id: \.offset) { _, segment in
+                switch segment {
+                case .text(let text):
+                    Text(text)
+                        .font(.body)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .textSelection(.enabled)
+
+                case .quote(let author, let text):
+                    VStack(alignment: .leading, spacing: 7) {
+                        if let author, !author.isEmpty {
+                            Text(author)
+                                .font(.subheadline.weight(.bold))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+
+                            Divider()
+                        }
+
+                        Text(text)
+                            .font(.body.italic())
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .textSelection(.enabled)
+                    }
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 9)
+                    .background(Color(uiColor: .secondarySystemBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 9, style: .continuous))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 9, style: .continuous)
+                            .stroke(Color.secondary.opacity(0.32), lineWidth: 1)
+                    }
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
     private func avatar(for comment: BooruComment) -> some View {
         Group {
             if let url = comment.avatarURL {
-                AsyncImage(url: url) { phase in
-                    if case .success(let image) = phase {
-                        image.resizable().scaledToFill()
-                    } else {
-                        avatarFallback(comment.author)
-                    }
-                }
+                RemoteAvatarImage(url: url, author: comment.author)
+            } else if site.apiType == .e621 {
+                E621AvatarImage(author: comment.author, baseURL: site.baseURL)
             } else {
-                avatarFallback(comment.author)
+                AvatarFallbackView(author: comment.author)
             }
         }
         .frame(width: 38, height: 38)
         .clipShape(Circle())
-    }
-
-    private func avatarFallback(_ author: String) -> some View {
-        ZStack {
-            Color(uiColor: .secondarySystemBackground)
-            Text(String(author.prefix(1)).uppercased())
-                .font(.headline)
-                .foregroundColor(.secondary)
-        }
     }
 
     private func commentVoteButton(_ comment: BooruComment) -> some View {
@@ -385,5 +403,266 @@ struct MobileCommentsView: View {
         } catch {
             errorMessage = error.localizedDescription
         }
+    }
+}
+
+private struct RemoteAvatarImage: View {
+    let url: URL
+    let author: String
+
+    var body: some View {
+        AsyncImage(url: url) { phase in
+            if case .success(let image) = phase {
+                image
+                    .resizable()
+                    .scaledToFill()
+            } else {
+                AvatarFallbackView(author: author)
+            }
+        }
+    }
+}
+
+private struct AvatarFallbackView: View {
+    let author: String
+
+    var body: some View {
+        ZStack {
+            Color(uiColor: .secondarySystemBackground)
+            Text(String(author.prefix(1)).uppercased())
+                .font(.headline)
+                .foregroundColor(.secondary)
+        }
+    }
+}
+
+private struct E621AvatarImage: View {
+    let author: String
+    let baseURL: URL
+
+    @State private var avatarURL: URL?
+    @State private var didResolve = false
+
+    var body: some View {
+        Group {
+            if let avatarURL {
+                RemoteAvatarImage(url: avatarURL, author: author)
+            } else {
+                AvatarFallbackView(author: author)
+            }
+        }
+        .task(id: "\(baseURL.absoluteString)|\(author)") {
+            guard !didResolve else { return }
+            avatarURL = await E621AvatarResolver.shared.avatarURL(for: author, baseURL: baseURL)
+            didResolve = true
+        }
+    }
+}
+
+private actor E621AvatarResolver {
+    static let shared = E621AvatarResolver()
+
+    private var cache: [String: URL] = [:]
+    private var missing: Set<String> = []
+    private var inFlight: [String: Task<URL?, Never>] = [:]
+
+    func avatarURL(for author: String, baseURL: URL) async -> URL? {
+        let key = "\(baseURL.host?.lowercased() ?? baseURL.absoluteString)|\(author.lowercased())"
+
+        if let cached = cache[key] {
+            return cached
+        }
+        if missing.contains(key) {
+            return nil
+        }
+        if let task = inFlight[key] {
+            return await task.value
+        }
+
+        let task = Task<URL?, Never> {
+            await Self.fetchAvatarURL(author: author, baseURL: baseURL)
+        }
+        inFlight[key] = task
+
+        let result = await task.value
+        inFlight[key] = nil
+
+        if let result {
+            cache[key] = result
+        } else {
+            missing.insert(key)
+        }
+
+        return result
+    }
+
+    private static func fetchAvatarURL(author: String, baseURL: URL) async -> URL? {
+        do {
+            let userURL = baseURL
+                .appendingPathComponent("users")
+                .appendingPathComponent("\(author).json")
+
+            var userRequest = URLRequest(url: userURL)
+            userRequest.setValue(
+                "iBooruBar/1.0 (iOS; contact: github.com/IlyaBOT/iBooru-Bar)",
+                forHTTPHeaderField: "User-Agent"
+            )
+
+            let (userData, userResponse) = try await URLSession.shared.data(for: userRequest)
+            guard let userHTTP = userResponse as? HTTPURLResponse,
+                  (200..<300).contains(userHTTP.statusCode),
+                  let userObject = try JSONSerialization.jsonObject(with: userData) as? [String: Any] else {
+                return nil
+            }
+
+            let user = (userObject["user"] as? [String: Any]) ?? userObject
+
+            if let direct = string(user["avatar_url"]),
+               let directURL = absoluteURL(direct, relativeTo: baseURL) {
+                return directURL
+            }
+
+            guard let avatarID = int(user["avatar_id"]) else {
+                return nil
+            }
+
+            let postURL = baseURL
+                .appendingPathComponent("posts")
+                .appendingPathComponent("\(avatarID).json")
+
+            var postRequest = URLRequest(url: postURL)
+            postRequest.setValue(
+                "iBooruBar/1.0 (iOS; contact: github.com/IlyaBOT/iBooru-Bar)",
+                forHTTPHeaderField: "User-Agent"
+            )
+
+            let (postData, postResponse) = try await URLSession.shared.data(for: postRequest)
+            guard let postHTTP = postResponse as? HTTPURLResponse,
+                  (200..<300).contains(postHTTP.statusCode),
+                  let postObject = try JSONSerialization.jsonObject(with: postData) as? [String: Any] else {
+                return nil
+            }
+
+            let post = (postObject["post"] as? [String: Any]) ?? postObject
+            let preview = post["preview"] as? [String: Any]
+            let sample = post["sample"] as? [String: Any]
+            let file = post["file"] as? [String: Any]
+
+            let rawURL = string(preview?["url"])
+                ?? string(sample?["url"])
+                ?? string(file?["url"])
+
+            return absoluteURL(rawURL, relativeTo: baseURL)
+        } catch {
+            return nil
+        }
+    }
+
+    private static func string(_ value: Any?) -> String? {
+        if let value = value as? String, !value.isEmpty { return value }
+        if let value = value as? NSNumber { return value.stringValue }
+        return nil
+    }
+
+    private static func int(_ value: Any?) -> Int? {
+        if let value = value as? Int { return value }
+        if let value = value as? NSNumber { return value.intValue }
+        if let value = value as? String { return Int(value) }
+        return nil
+    }
+
+    private static func absoluteURL(_ rawValue: String?, relativeTo baseURL: URL) -> URL? {
+        guard let rawValue, !rawValue.isEmpty else { return nil }
+        if let url = URL(string: rawValue), url.scheme != nil { return url }
+        if rawValue.hasPrefix("//") { return URL(string: "https:" + rawValue) }
+        return URL(string: rawValue, relativeTo: baseURL)?.absoluteURL
+    }
+}
+
+private enum CommentBodySegment: Equatable {
+    case text(String)
+    case quote(author: String?, text: String)
+}
+
+private enum CommentBodyParser {
+    private static let quoteExpression = try? NSRegularExpression(
+        pattern: #"\[quote\](.*?)\[/quote\]"#,
+        options: [.caseInsensitive, .dotMatchesLineSeparators]
+    )
+
+    private static let quoteAuthorExpression = try? NSRegularExpression(
+        pattern: #"^\s*\"([^\"]+)\":/(?:users|user/show)/\d+\s+said:\s*"#,
+        options: [.caseInsensitive]
+    )
+
+    static func parse(_ body: String) -> [CommentBodySegment] {
+        guard let quoteExpression else {
+            return [.text(body)]
+        }
+
+        let nsBody = body as NSString
+        let fullRange = NSRange(location: 0, length: nsBody.length)
+        let matches = quoteExpression.matches(in: body, options: [], range: fullRange)
+
+        guard !matches.isEmpty else {
+            return [.text(body)]
+        }
+
+        var segments: [CommentBodySegment] = []
+        var cursor = 0
+
+        for match in matches {
+            if match.range.location > cursor {
+                let plainRange = NSRange(location: cursor, length: match.range.location - cursor)
+                appendPlainText(nsBody.substring(with: plainRange), to: &segments)
+            }
+
+            if match.numberOfRanges > 1,
+               match.range(at: 1).location != NSNotFound {
+                let rawQuote = nsBody.substring(with: match.range(at: 1))
+                let parsed = parseQuote(rawQuote)
+                if !parsed.text.isEmpty {
+                    segments.append(.quote(author: parsed.author, text: parsed.text))
+                }
+            }
+
+            cursor = NSMaxRange(match.range)
+        }
+
+        if cursor < nsBody.length {
+            appendPlainText(
+                nsBody.substring(with: NSRange(location: cursor, length: nsBody.length - cursor)),
+                to: &segments
+            )
+        }
+
+        return segments.isEmpty ? [.text(body)] : segments
+    }
+
+    private static func parseQuote(_ rawQuote: String) -> (author: String?, text: String) {
+        var text = rawQuote.trimmingCharacters(in: .whitespacesAndNewlines)
+        var author: String?
+
+        if let quoteAuthorExpression {
+            let nsText = text as NSString
+            let range = NSRange(location: 0, length: nsText.length)
+            if let match = quoteAuthorExpression.firstMatch(in: text, options: [], range: range) {
+                if match.numberOfRanges > 1,
+                   match.range(at: 1).location != NSNotFound {
+                    author = nsText.substring(with: match.range(at: 1))
+                }
+
+                text = nsText.substring(from: NSMaxRange(match.range))
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+            }
+        }
+
+        return (author, text)
+    }
+
+    private static func appendPlainText(_ rawText: String, to segments: inout [CommentBodySegment]) {
+        let text = rawText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !text.isEmpty else { return }
+        segments.append(.text(text))
     }
 }
