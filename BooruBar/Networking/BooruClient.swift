@@ -1,4 +1,7 @@
 import Foundation
+#if canImport(FoundationXML)
+import FoundationXML
+#endif
 
 protocol BooruClient {
     func fetchTrending(page: Int, perPage: Int, nsfwEnabled: Bool) async throws -> [BooruImage]
@@ -460,11 +463,11 @@ struct ShimmieClient: BooruClient {
     }
 
     func fetchTrending(page: Int, perPage: Int, nsfwEnabled: Bool) async throws -> [BooruImage] {
-        try await fetchPosts(
-            tags: "order:score_desc",
-            page: page,
-            perPage: perPage
-        )
+        // `order:score` only exists when a Shimmie installation enables the
+        // optional Numeric Score extension. The Danbooru Client API itself does
+        // not guarantee that extension, so keep this feed compatible with stock
+        // Shimmie and use the API's native newest-first ordering.
+        try await fetchPosts(tags: "", page: page, perPage: perPage)
     }
 
     func fetchNewest(page: Int, perPage: Int, nsfwEnabled: Bool) async throws -> [BooruImage] {
