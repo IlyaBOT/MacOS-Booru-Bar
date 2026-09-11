@@ -6,44 +6,9 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXContainerItemProxy section */
-		C1A519822FE846F700635089 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = C1A5196B2FE846F300635089 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = C1A519722FE846F300635089;
-			remoteInfo = BooruBar;
-		};
-		C1A5198C2FE846F800635089 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = C1A5196B2FE846F300635089 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = C1A519722FE846F300635089;
-			remoteInfo = BooruBar;
-		};
-		C1C399083050A4170064F4A6 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = C1A5196B2FE846F300635089 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = C1C398FA3050A4120064F4A6;
-			remoteInfo = iBooruBar;
-		};
-		C1C399123050A4170064F4A6 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = C1A5196B2FE846F300635089 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = C1C398FA3050A4120064F4A6;
-			remoteInfo = iBooruBar;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXFileReference section */
 		C1A519732FE846F300635089 /* BooruBar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BooruBar.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		C1A519812FE846F700635089 /* BooruBarTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BooruBarTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		C1A5198B2FE846F800635089 /* BooruBarUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BooruBarUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C1C398FB3050A4120064F4A6 /* iBooruBar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iBooruBar.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		C1C399073050A4170064F4A6 /* iBooruBarTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iBooruBarTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		C1C399113050A4170064F4A6 /* iBooruBarUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iBooruBarUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -76,49 +41,15 @@
 			path = BooruBar;
 			sourceTree = "<group>";
 		};
-		C1A519842FE846F700635089 /* BooruBarTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = BooruBarTests;
-			sourceTree = "<group>";
-		};
-		C1A5198E2FE846F800635089 /* BooruBarUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = BooruBarUITests;
-			sourceTree = "<group>";
-		};
 		C1C398FC3050A4120064F4A6 /* iBooruBar */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = iBooruBar;
-			sourceTree = "<group>";
-		};
-		C1C3990A3050A4170064F4A6 /* iBooruBarTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = iBooruBarTests;
-			sourceTree = "<group>";
-		};
-		C1C399143050A4170064F4A6 /* iBooruBarUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = iBooruBarUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		C1A519702FE846F300635089 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		C1A5197E2FE846F700635089 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		C1A519882FE846F800635089 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -132,20 +63,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		C1C399043050A4170064F4A6 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		C1C3990E3050A4170064F4A6 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -153,11 +70,7 @@
 			isa = PBXGroup;
 			children = (
 				C1A519752FE846F300635089 /* BooruBar */,
-				C1A519842FE846F700635089 /* BooruBarTests */,
-				C1A5198E2FE846F800635089 /* BooruBarUITests */,
 				C1C398FC3050A4120064F4A6 /* iBooruBar */,
-				C1C3990A3050A4170064F4A6 /* iBooruBarTests */,
-				C1C399143050A4170064F4A6 /* iBooruBarUITests */,
 				C1A519742FE846F300635089 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -166,11 +79,7 @@
 			isa = PBXGroup;
 			children = (
 				C1A519732FE846F300635089 /* BooruBar.app */,
-				C1A519812FE846F700635089 /* BooruBarTests.xctest */,
-				C1A5198B2FE846F800635089 /* BooruBarUITests.xctest */,
 				C1C398FB3050A4120064F4A6 /* iBooruBar.app */,
-				C1C399073050A4170064F4A6 /* iBooruBarTests.xctest */,
-				C1C399113050A4170064F4A6 /* iBooruBarUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -200,52 +109,6 @@
 			productReference = C1A519732FE846F300635089 /* BooruBar.app */;
 			productType = "com.apple.product-type.application";
 		};
-		C1A519802FE846F700635089 /* BooruBarTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = C1A519982FE846F800635089 /* Build configuration list for PBXNativeTarget "BooruBarTests" */;
-			buildPhases = (
-				C1A5197D2FE846F700635089 /* Sources */,
-				C1A5197E2FE846F700635089 /* Frameworks */,
-				C1A5197F2FE846F700635089 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				C1A519832FE846F700635089 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				C1A519842FE846F700635089 /* BooruBarTests */,
-			);
-			name = BooruBarTests;
-			packageProductDependencies = (
-			);
-			productName = BooruBarTests;
-			productReference = C1A519812FE846F700635089 /* BooruBarTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		C1A5198A2FE846F800635089 /* BooruBarUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = C1A5199B2FE846F800635089 /* Build configuration list for PBXNativeTarget "BooruBarUITests" */;
-			buildPhases = (
-				C1A519872FE846F800635089 /* Sources */,
-				C1A519882FE846F800635089 /* Frameworks */,
-				C1A519892FE846F800635089 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				C1A5198D2FE846F800635089 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				C1A5198E2FE846F800635089 /* BooruBarUITests */,
-			);
-			name = BooruBarUITests;
-			packageProductDependencies = (
-			);
-			productName = BooruBarUITests;
-			productReference = C1A5198B2FE846F800635089 /* BooruBarUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 		C1C398FA3050A4120064F4A6 /* iBooruBar */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = C1C3991F3050A4170064F4A6 /* Build configuration list for PBXNativeTarget "iBooruBar" */;
@@ -268,52 +131,6 @@
 			productReference = C1C398FB3050A4120064F4A6 /* iBooruBar.app */;
 			productType = "com.apple.product-type.application";
 		};
-		C1C399063050A4170064F4A6 /* iBooruBarTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = C1C399203050A4170064F4A6 /* Build configuration list for PBXNativeTarget "iBooruBarTests" */;
-			buildPhases = (
-				C1C399033050A4170064F4A6 /* Sources */,
-				C1C399043050A4170064F4A6 /* Frameworks */,
-				C1C399053050A4170064F4A6 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				C1C399093050A4170064F4A6 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				C1C3990A3050A4170064F4A6 /* iBooruBarTests */,
-			);
-			name = iBooruBarTests;
-			packageProductDependencies = (
-			);
-			productName = iBooruBarTests;
-			productReference = C1C399073050A4170064F4A6 /* iBooruBarTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		C1C399103050A4170064F4A6 /* iBooruBarUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = C1C399213050A4170064F4A6 /* Build configuration list for PBXNativeTarget "iBooruBarUITests" */;
-			buildPhases = (
-				C1C3990D3050A4170064F4A6 /* Sources */,
-				C1C3990E3050A4170064F4A6 /* Frameworks */,
-				C1C3990F3050A4170064F4A6 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				C1C399133050A4170064F4A6 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				C1C399143050A4170064F4A6 /* iBooruBarUITests */,
-			);
-			name = iBooruBarUITests;
-			packageProductDependencies = (
-			);
-			productName = iBooruBarUITests;
-			productReference = C1C399113050A4170064F4A6 /* iBooruBarUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -327,24 +144,8 @@
 					C1A519722FE846F300635089 = {
 						CreatedOnToolsVersion = 16.4;
 					};
-					C1A519802FE846F700635089 = {
-						CreatedOnToolsVersion = 16.4;
-						TestTargetID = C1A519722FE846F300635089;
-					};
-					C1A5198A2FE846F800635089 = {
-						CreatedOnToolsVersion = 16.4;
-						TestTargetID = C1A519722FE846F300635089;
-					};
 					C1C398FA3050A4120064F4A6 = {
 						CreatedOnToolsVersion = 16.4;
-					};
-					C1C399063050A4170064F4A6 = {
-						CreatedOnToolsVersion = 16.4;
-						TestTargetID = C1C398FA3050A4120064F4A6;
-					};
-					C1C399103050A4170064F4A6 = {
-						CreatedOnToolsVersion = 16.4;
-						TestTargetID = C1C398FA3050A4120064F4A6;
 					};
 				};
 			};
@@ -363,11 +164,7 @@
 			projectRoot = "";
 			targets = (
 				C1A519722FE846F300635089 /* BooruBar */,
-				C1A519802FE846F700635089 /* BooruBarTests */,
-				C1A5198A2FE846F800635089 /* BooruBarUITests */,
 				C1C398FA3050A4120064F4A6 /* iBooruBar */,
-				C1C399063050A4170064F4A6 /* iBooruBarTests */,
-				C1C399103050A4170064F4A6 /* iBooruBarUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -380,35 +177,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		C1A5197F2FE846F700635089 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		C1A519892FE846F800635089 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		C1C398F93050A4120064F4A6 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		C1C399053050A4170064F4A6 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		C1C3990F3050A4170064F4A6 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -425,20 +194,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		C1A5197D2FE846F700635089 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		C1A519872FE846F800635089 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		C1C398F73050A4120064F4A6 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -446,44 +201,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		C1C399033050A4170064F4A6 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		C1C3990D3050A4170064F4A6 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		C1A519832FE846F700635089 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = C1A519722FE846F300635089 /* BooruBar */;
-			targetProxy = C1A519822FE846F700635089 /* PBXContainerItemProxy */;
-		};
-		C1A5198D2FE846F800635089 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = C1A519722FE846F300635089 /* BooruBar */;
-			targetProxy = C1A5198C2FE846F800635089 /* PBXContainerItemProxy */;
-		};
-		C1C399093050A4170064F4A6 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = C1C398FA3050A4120064F4A6 /* iBooruBar */;
-			targetProxy = C1C399083050A4170064F4A6 /* PBXContainerItemProxy */;
-		};
-		C1C399133050A4170064F4A6 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = C1C398FA3050A4120064F4A6 /* iBooruBar */;
-			targetProxy = C1C399123050A4170064F4A6 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		C1A519932FE846F800635089 /* Debug */ = {
@@ -619,13 +337,15 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = BooruBar;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MACOSX_DEPLOYMENT_TARGET = 12.4;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = ru.ibworkshop.BooruBar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -648,87 +368,21 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = BooruBar;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MACOSX_DEPLOYMENT_TARGET = 12.4;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = ru.ibworkshop.BooruBar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-			};
-			name = Release;
-		};
-		C1A519992FE846F800635089 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 36FFHP37HT;
-				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = ru.ibworkshop.BooruBarTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BooruBar.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/BooruBar";
-			};
-			name = Debug;
-		};
-		C1A5199A2FE846F800635089 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 36FFHP37HT;
-				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = ru.ibworkshop.BooruBarTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BooruBar.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/BooruBar";
-			};
-			name = Release;
-		};
-		C1A5199C2FE846F800635089 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 36FFHP37HT;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = ru.ibworkshop.BooruBarUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = BooruBar;
-			};
-			name = Debug;
-		};
-		C1A5199D2FE846F800635089 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 36FFHP37HT;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = ru.ibworkshop.BooruBarUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = BooruBar;
 			};
 			name = Release;
 		};
@@ -754,7 +408,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = ru.ibworkshop.iBooruBar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -790,7 +444,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = ru.ibworkshop.iBooruBar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -801,102 +455,6 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		C1C3991B3050A4170064F4A6 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 36FFHP37HT;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = ru.ibworkshop.iBooruBarTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = YES;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iBooruBar.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iBooruBar";
-			};
-			name = Debug;
-		};
-		C1C3991C3050A4170064F4A6 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 36FFHP37HT;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = ru.ibworkshop.iBooruBarTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = YES;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iBooruBar.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iBooruBar";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		C1C3991D3050A4170064F4A6 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 36FFHP37HT;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = ru.ibworkshop.iBooruBarUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = YES;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = iBooruBar;
-			};
-			name = Debug;
-		};
-		C1C3991E3050A4170064F4A6 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 36FFHP37HT;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = ru.ibworkshop.iBooruBarUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = YES;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = iBooruBar;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -922,47 +480,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C1A519982FE846F800635089 /* Build configuration list for PBXNativeTarget "BooruBarTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				C1A519992FE846F800635089 /* Debug */,
-				C1A5199A2FE846F800635089 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		C1A5199B2FE846F800635089 /* Build configuration list for PBXNativeTarget "BooruBarUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				C1A5199C2FE846F800635089 /* Debug */,
-				C1A5199D2FE846F800635089 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		C1C3991F3050A4170064F4A6 /* Build configuration list for PBXNativeTarget "iBooruBar" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C1C399193050A4170064F4A6 /* Debug */,
 				C1C3991A3050A4170064F4A6 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		C1C399203050A4170064F4A6 /* Build configuration list for PBXNativeTarget "iBooruBarTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				C1C3991B3050A4170064F4A6 /* Debug */,
-				C1C3991C3050A4170064F4A6 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		C1C399213050A4170064F4A6 /* Build configuration list for PBXNativeTarget "iBooruBarUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				C1C3991D3050A4170064F4A6 /* Debug */,
-				C1C3991E3050A4170064F4A6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
