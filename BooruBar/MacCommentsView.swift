@@ -5,9 +5,8 @@ struct MacCommentsView: View {
     let image: BooruImage
     let site: BooruSite
     @ObservedObject var settingsStore: SettingsStore
-    var onCommentCountChanged: ((Int) -> Void)?
-
-    @Environment(\.dismiss) private var dismiss
+    var onCommentCountChanged: ((Int) -> Void)? = nil
+    let onDismiss: () -> Void
 
     @State private var comments: [MacBooruComment] = []
     @State private var isLoading = true
@@ -37,7 +36,7 @@ struct MacCommentsView: View {
                         ProgressView()
                         Spacer()
                     }
-                } else if let errorMessage, comments.isEmpty {
+                } else if let errorMessage = errorMessage, comments.isEmpty {
                     messageView(icon: "exclamationmark.triangle", text: errorMessage)
                 } else if comments.isEmpty {
                     messageView(icon: "bubble.left", text: "There are no comments on this post yet.")
@@ -49,7 +48,7 @@ struct MacCommentsView: View {
             Divider()
             composer
         }
-        .frame(width: 430, height: 560)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(nsColor: .windowBackgroundColor))
         .task {
             await loadComments()
@@ -89,15 +88,18 @@ struct MacCommentsView: View {
             .buttonStyle(.borderless)
 
             Button {
-                dismiss()
+                onDismiss()
             } label: {
                 Image(systemName: "xmark.circle.fill")
                     .font(.title3)
                     .foregroundStyle(.secondary)
             }
             .buttonStyle(.plain)
+            .keyboardShortcut(.cancelAction)
+            .help("Back to gallery")
         }
-        .padding(12)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
     }
 
     private var commentList: some View {
@@ -131,10 +133,7 @@ struct MacCommentsView: View {
                     }
                 }
 
-                Text(comment.body)
-                    .font(.body)
-                    .textSelection(.enabled)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                commentBody(comment.body)
 
                 if comment.score != nil {
                     HStack {
@@ -146,6 +145,197 @@ struct MacCommentsView: View {
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
+    }
+
+    @ViewBuilder
+    private func commentBody(_ body: String) -> some View {
+        if site.resolvedProtocol == .philomena {
+            philomenaSegmentsView(
+                MacPhilomenaCommentBodyParser.parse(body),
+                visitedCommentIDs: [],
+                depth: 0
+            )
+        } else {
+            let segments = MacCommentBodyParser.parse(body)
+
+            VStack(alignment: .leading, spacing: 8) {
+                ForEach(Array(segments.enumerated()), id: \.offset) { _, segment in
+                    switch segment {
+                    case .text(let text):
+                        Text(text)
+                            .font(.body)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .textSelection(.enabled)
+
+                    case .quote(let author, let text):
+                        VStack(alignment: .leading, spacing: 7) {
+                            if let author = author, !author.isEmpty {
+                                Text(author)
+                                    .font(.subheadline.weight(.bold))
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                                Divider()
+                            }
+
+                            Text(text)
+                                .font(.body.italic())
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .textSelection(.enabled)
+                        }
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 9)
+                        .background(Color(nsColor: .controlBackgroundColor))
+                        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                .stroke(Color.secondary.opacity(0.32), lineWidth: 1)
+                        }
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    private func philomenaSegmentsView(
+        _ segments: [MacPhilomenaCommentBodySegment],
+        visitedCommentIDs: Set<Int>,
+        depth: Int
+    ) -> AnyView {
+        AnyView(
+            VStack(alignment: .leading, spacing: 8) {
+                ForEach(Array(segments.enumerated()), id: \.offset) { _, segment in
+                    philomenaSegmentView(
+                        segment,
+                        visitedCommentIDs: visitedCommentIDs,
+                        depth: depth
+                    )
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        )
+    }
+
+    private func philomenaSegmentView(
+        _ segment: MacPhilomenaCommentBodySegment,
+        visitedCommentIDs: Set<Int>,
+        depth: Int
+    ) -> AnyView {
+        switch segment {
+        case .text(let text):
+            return AnyView(
+                Text(text)
+                    .font(.body)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .textSelection(.enabled)
+            )
+
+        case .reply(let author, let commentID):
+            return philomenaReplyView(
+                author: author,
+                commentID: commentID,
+                visitedCommentIDs: visitedCommentIDs,
+                depth: depth
+            )
+
+        case .quote(let author, let commentID, let segments):
+            return philomenaQuoteView(
+                author: author,
+                commentID: commentID,
+                segments: segments,
+                visitedCommentIDs: visitedCommentIDs,
+                depth: depth
+            )
+        }
+    }
+
+    private func philomenaReplyView(
+        author: String,
+        commentID: Int,
+        visitedCommentIDs: Set<Int>,
+        depth: Int
+    ) -> AnyView {
+        guard !visitedCommentIDs.contains(commentID),
+              visitedCommentIDs.count < 6,
+              let referencedComment = comments.first(where: { $0.id == commentID }) else {
+            return philomenaQuoteView(
+                author: author,
+                commentID: commentID,
+                segments: [],
+                visitedCommentIDs: visitedCommentIDs,
+                depth: depth
+            )
+        }
+
+        var nextVisited = visitedCommentIDs
+        nextVisited.insert(commentID)
+
+        return philomenaQuoteView(
+            author: referencedComment.author,
+            commentID: commentID,
+            segments: MacPhilomenaCommentBodyParser.parse(referencedComment.body),
+            visitedCommentIDs: nextVisited,
+            depth: depth
+        )
+    }
+
+    private func philomenaQuoteView(
+        author: String?,
+        commentID: Int?,
+        segments: [MacPhilomenaCommentBodySegment],
+        visitedCommentIDs: Set<Int>,
+        depth: Int
+    ) -> AnyView {
+        var renderedSegments = segments
+        var renderedAuthor = author
+        var nextVisited = visitedCommentIDs
+
+        if renderedSegments.isEmpty,
+           let commentID = commentID,
+           !visitedCommentIDs.contains(commentID),
+           visitedCommentIDs.count < 6,
+           let referencedComment = comments.first(where: { $0.id == commentID }) {
+            renderedAuthor = referencedComment.author
+            renderedSegments = MacPhilomenaCommentBodyParser.parse(referencedComment.body)
+            nextVisited.insert(commentID)
+        }
+
+        let hasBody = !renderedSegments.isEmpty
+
+        return AnyView(
+            VStack(alignment: .leading, spacing: 7) {
+                if let renderedAuthor = renderedAuthor, !renderedAuthor.isEmpty {
+                    Text(renderedAuthor)
+                        .font(.subheadline.weight(.bold))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    if hasBody {
+                        Divider()
+                    }
+                }
+
+                if hasBody {
+                    philomenaSegmentsView(
+                        renderedSegments,
+                        visitedCommentIDs: nextVisited,
+                        depth: depth + 1
+                    )
+                } else if let commentID = commentID {
+                    Text("Comment #\(commentID)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 9)
+            .background(Color(nsColor: .controlBackgroundColor))
+            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .stroke(Color.secondary.opacity(0.32), lineWidth: 1)
+            }
+            .padding(.leading, depth > 0 ? 8 : 0)
+        )
     }
 
     private func avatar(for comment: MacBooruComment) -> some View {
@@ -372,7 +562,7 @@ private struct MacE621AvatarImage: View {
 
     var body: some View {
         Group {
-            if let avatarURL {
+            if let avatarURL = avatarURL {
                 MacRemoteAvatarImage(url: avatarURL, author: author)
             } else {
                 MacAvatarFallbackView(author: author)
@@ -391,6 +581,7 @@ private actor MacE621AvatarResolver {
 
     private var cache: [String: URL] = [:]
     private var missing: Set<String> = []
+    private var inFlight: [String: Task<URL?, Never>] = [:]
 
     func avatarURL(for author: String, baseURL: URL) async -> URL? {
         let key = "\(baseURL.host?.lowercased() ?? baseURL.absoluteString)|\(author.lowercased())"
@@ -401,9 +592,19 @@ private actor MacE621AvatarResolver {
         if missing.contains(key) {
             return nil
         }
+        if let task = inFlight[key] {
+            return await task.value
+        }
 
-        let result = await Self.fetchAvatarURL(author: author, baseURL: baseURL)
-        if let result {
+        let task = Task<URL?, Never> {
+            await Self.fetchAvatarURL(author: author, baseURL: baseURL)
+        }
+        inFlight[key] = task
+
+        let result = await task.value
+        inFlight[key] = nil
+
+        if let result = result {
             cache[key] = result
         } else {
             missing.insert(key)
@@ -489,7 +690,7 @@ private actor MacE621AvatarResolver {
     }
 
     private static func absoluteURL(_ rawValue: String?, relativeTo baseURL: URL) -> URL? {
-        guard let rawValue, !rawValue.isEmpty else { return nil }
+        guard let rawValue = rawValue, !rawValue.isEmpty else { return nil }
         if rawValue.hasPrefix("//") {
             return URL(string: "https:" + rawValue)
         }
@@ -497,5 +698,322 @@ private actor MacE621AvatarResolver {
             return url
         }
         return URL(string: rawValue, relativeTo: baseURL)?.absoluteURL
+    }
+}
+
+private enum MacCommentBodySegment: Equatable {
+    case text(String)
+    case quote(author: String?, text: String)
+}
+
+private enum MacCommentBodyParser {
+    private static let quoteExpression = try? NSRegularExpression(
+        pattern: #"\[quote\](.*?)\[/quote\]"#,
+        options: [.caseInsensitive, .dotMatchesLineSeparators]
+    )
+
+    private static let quoteAuthorExpression = try? NSRegularExpression(
+        pattern: #"^\s*\"([^\"]+)\":/(?:users|user/show)/\d+\s+said:\s*"#,
+        options: [.caseInsensitive]
+    )
+
+    static func parse(_ body: String) -> [MacCommentBodySegment] {
+        guard let quoteExpression = quoteExpression else {
+            return [.text(body)]
+        }
+
+        let nsBody = body as NSString
+        let fullRange = NSRange(location: 0, length: nsBody.length)
+        let matches = quoteExpression.matches(in: body, options: [], range: fullRange)
+
+        guard !matches.isEmpty else {
+            return [.text(body)]
+        }
+
+        var segments: [MacCommentBodySegment] = []
+        var cursor = 0
+
+        for match in matches {
+            if match.range.location > cursor {
+                let plainRange = NSRange(location: cursor, length: match.range.location - cursor)
+                appendPlainText(nsBody.substring(with: plainRange), to: &segments)
+            }
+
+            if match.numberOfRanges > 1,
+               match.range(at: 1).location != NSNotFound {
+                let rawQuote = nsBody.substring(with: match.range(at: 1))
+                let parsed = parseQuote(rawQuote)
+                if !parsed.text.isEmpty {
+                    segments.append(.quote(author: parsed.author, text: parsed.text))
+                }
+            }
+
+            cursor = NSMaxRange(match.range)
+        }
+
+        if cursor < nsBody.length {
+            appendPlainText(
+                nsBody.substring(with: NSRange(location: cursor, length: nsBody.length - cursor)),
+                to: &segments
+            )
+        }
+
+        return segments.isEmpty ? [.text(body)] : segments
+    }
+
+    private static func parseQuote(_ rawQuote: String) -> (author: String?, text: String) {
+        var text = rawQuote.trimmingCharacters(in: .whitespacesAndNewlines)
+        var author: String?
+
+        if let quoteAuthorExpression = quoteAuthorExpression {
+            let nsText = text as NSString
+            let range = NSRange(location: 0, length: nsText.length)
+            if let match = quoteAuthorExpression.firstMatch(in: text, options: [], range: range) {
+                if match.numberOfRanges > 1,
+                   match.range(at: 1).location != NSNotFound {
+                    author = nsText.substring(with: match.range(at: 1))
+                }
+
+                text = nsText.substring(from: NSMaxRange(match.range))
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+            }
+        }
+
+        return (author, text)
+    }
+
+    private static func appendPlainText(_ rawText: String, to segments: inout [MacCommentBodySegment]) {
+        let text = rawText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !text.isEmpty else { return }
+        segments.append(.text(text))
+    }
+}
+
+private indirect enum MacPhilomenaCommentBodySegment: Equatable {
+    case text(String)
+    case quote(author: String?, commentID: Int?, segments: [MacPhilomenaCommentBodySegment])
+    case reply(author: String, commentID: Int)
+}
+
+private enum MacPhilomenaCommentBodyParser {
+    private struct Line {
+        let depth: Int
+        let text: String
+    }
+
+    private static let replyExpression = try? NSRegularExpression(
+        pattern: #"^\s*\[@([^\]]+)\]\([^)]*#comment_(\d+)\)\s*$"#,
+        options: [.caseInsensitive]
+    )
+
+    private static let imageExpression = try? NSRegularExpression(
+        pattern: #"!\[([^\]]*)\]\([^)]*\)"#,
+        options: []
+    )
+
+    private static let linkExpression = try? NSRegularExpression(
+        pattern: #"\[([^\]]+)\]\([^)]*\)"#,
+        options: []
+    )
+
+    static func parse(_ body: String) -> [MacPhilomenaCommentBodySegment] {
+        let normalized = body
+            .replacingOccurrences(of: "\r\n", with: "\n")
+            .replacingOccurrences(of: "\r", with: "\n")
+
+        let lines = normalized
+            .components(separatedBy: "\n")
+            .map(tokenize)
+
+        var index = 0
+        let segments = parseLevel(lines, index: &index, level: 0)
+
+        if !segments.isEmpty {
+            return segments
+        }
+
+        let fallback = cleanInline(normalized)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        return fallback.isEmpty ? [] : [.text(fallback)]
+    }
+
+    private static func tokenize(_ rawLine: String) -> Line {
+        var remainder = rawLine[...]
+        var depth = 0
+
+        while true {
+            while let first = remainder.first, first == " " || first == "\t" {
+                remainder.removeFirst()
+            }
+
+            guard remainder.first == ">" else { break }
+            remainder.removeFirst()
+            depth += 1
+
+            if remainder.first == " " {
+                remainder.removeFirst()
+            }
+        }
+
+        return Line(depth: depth, text: String(remainder))
+    }
+
+    private static func parseLevel(
+        _ lines: [Line],
+        index: inout Int,
+        level: Int
+    ) -> [MacPhilomenaCommentBodySegment] {
+        var segments: [MacPhilomenaCommentBodySegment] = []
+        var paragraphLines: [String] = []
+
+        func flushParagraph() {
+            let text = paragraphLines
+                .joined(separator: "\n")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+            paragraphLines.removeAll(keepingCapacity: true)
+
+            guard !text.isEmpty else { return }
+            segments.append(.text(cleanInline(text)))
+        }
+
+        while index < lines.count {
+            let line = lines[index]
+
+            if line.depth < level {
+                break
+            }
+
+            if line.depth > level {
+                flushParagraph()
+                let children = parseLevel(lines, index: &index, level: level + 1)
+                if !children.isEmpty {
+                    segments.append(.quote(author: nil, commentID: nil, segments: children))
+                }
+                continue
+            }
+
+            index += 1
+            let trimmed = line.text.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            if trimmed.isEmpty {
+                flushParagraph()
+                continue
+            }
+
+            if let reply = replyReference(trimmed) {
+                flushParagraph()
+                segments.append(.reply(author: reply.author, commentID: reply.commentID))
+                continue
+            }
+
+            paragraphLines.append(line.text)
+        }
+
+        flushParagraph()
+        return mergeReplyWithQuotedSnapshot(segments)
+    }
+
+    private static func mergeReplyWithQuotedSnapshot(
+        _ segments: [MacPhilomenaCommentBodySegment]
+    ) -> [MacPhilomenaCommentBodySegment] {
+        var result: [MacPhilomenaCommentBodySegment] = []
+        var index = 0
+
+        while index < segments.count {
+            if case .reply(let author, let commentID) = segments[index],
+               index + 1 < segments.count,
+               case .quote(let quoteAuthor, let quoteCommentID, let children) = segments[index + 1] {
+                if quoteAuthor == nil && quoteCommentID == nil {
+                    result.append(
+                        .quote(
+                            author: author,
+                            commentID: commentID,
+                            segments: children
+                        )
+                    )
+                } else {
+                    result.append(
+                        .quote(
+                            author: author,
+                            commentID: commentID,
+                            segments: [segments[index + 1]]
+                        )
+                    )
+                }
+                index += 2
+                continue
+            }
+
+            result.append(segments[index])
+            index += 1
+        }
+
+        return result
+    }
+
+    private static func replyReference(_ text: String) -> (author: String, commentID: Int)? {
+        guard let replyExpression = replyExpression else { return nil }
+
+        let nsText = text as NSString
+        let range = NSRange(location: 0, length: nsText.length)
+        guard let match = replyExpression.firstMatch(in: text, options: [], range: range),
+              match.numberOfRanges >= 3,
+              match.range(at: 1).location != NSNotFound,
+              match.range(at: 2).location != NSNotFound,
+              let commentID = Int(nsText.substring(with: match.range(at: 2))) else {
+            return nil
+        }
+
+        var author = nsText.substring(with: match.range(at: 1))
+        if author.hasPrefix("@") {
+            author.removeFirst()
+        }
+
+        return (author, commentID)
+    }
+
+    private static func cleanInline(_ text: String) -> String {
+        var value = text
+
+        if let imageExpression = imageExpression {
+            value = replacingMatches(imageExpression, in: value) { altText in
+                altText.isEmpty ? "Image" : altText
+            }
+        }
+
+        if let linkExpression = linkExpression {
+            value = replacingMatches(linkExpression, in: value) { label in
+                label
+            }
+        }
+
+        return value
+    }
+
+    private static func replacingMatches(
+        _ expression: NSRegularExpression,
+        in text: String,
+        replacement: (String) -> String
+    ) -> String {
+        let nsText = text as NSString
+        let matches = expression.matches(
+            in: text,
+            options: [],
+            range: NSRange(location: 0, length: nsText.length)
+        )
+
+        var result = text
+        for match in matches.reversed() {
+            guard match.numberOfRanges > 1,
+                  match.range(at: 1).location != NSNotFound,
+                  let swiftRange = Range(match.range, in: result) else {
+                continue
+            }
+
+            let label = nsText.substring(with: match.range(at: 1))
+            result.replaceSubrange(swiftRange, with: replacement(label))
+        }
+
+        return result
     }
 }
