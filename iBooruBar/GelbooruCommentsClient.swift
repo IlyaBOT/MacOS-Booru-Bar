@@ -102,7 +102,7 @@ struct GelbooruCommentsClient {
         return Self.isoDate(string)
     }
 
-    fileprivate static func isoDate(_ value: String) -> Date? {
+    nonisolated fileprivate static func isoDate(_ value: String) -> Date? {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         if let date = formatter.date(from: value) { return date }
