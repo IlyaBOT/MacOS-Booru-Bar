@@ -5,16 +5,22 @@ struct MacInteractionBarView: View {
     let image: BooruImage
     let site: BooruSite?
     @ObservedObject var settingsStore: SettingsStore
+    let onOpenComments: () -> Void
 
     @State private var interactionState: MacBooruPostInteractionState
     @State private var isLoadingPostState = false
     @State private var loadingVote: BooruVoteState?
-    @State private var showingComments = false
     @State private var errorMessage: String?
 
-    init(image: BooruImage, site: BooruSite?, settingsStore: SettingsStore) {
+    init(
+        image: BooruImage,
+        site: BooruSite?,
+        settingsStore: SettingsStore,
+        onOpenComments: @escaping () -> Void
+    ) {
         self.image = image
         self.site = site
+        self.onOpenComments = onOpenComments
         _settingsStore = ObservedObject(wrappedValue: settingsStore)
         _interactionState = State(
             initialValue: MacBooruPostInteractionState(
@@ -47,15 +53,20 @@ struct MacInteractionBarView: View {
             )
 
             Button {
-                showingComments = true
+                onOpenComments()
             } label: {
                 HStack(spacing: 5) {
                     Image(systemName: "bubble.left")
                     Text(countText(interactionState.commentCount))
                 }
                 .frame(maxWidth: .infinity)
+                .padding(.vertical, 4)
+                .contentShape(Rectangle())
             }
-            .buttonStyle(.bordered)
+            .buttonStyle(.plain)
+            .background(Color(nsColor: .textBackgroundColor).opacity(0.55))
+            .clipShape(RoundedRectangle(cornerRadius: 5, style: .continuous))
+            .foregroundStyle(capabilities.canReadComments ? Color.primary : Color.secondary)
             .disabled(!capabilities.canReadComments)
             .help(capabilities.canReadComments ? "Comments" : "Comments are not supported by this API")
 
@@ -65,28 +76,8 @@ struct MacInteractionBarView: View {
                     .frame(width: 18)
             }
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 7)
-        .background(Color(nsColor: .controlBackgroundColor))
-        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .stroke(Color(nsColor: .separatorColor), lineWidth: 0.5)
-        }
         .task(id: interactionTaskID) {
             await loadPostStateIfUseful()
-        }
-        .sheet(isPresented: $showingComments) {
-            if let site {
-                MacCommentsView(
-                    image: image,
-                    site: site,
-                    settingsStore: settingsStore,
-                    onCommentCountChanged: { count in
-                        interactionState.commentCount = count
-                    }
-                )
-            }
         }
         .alert("BooruBar", isPresented: Binding(
             get: { errorMessage != nil },
@@ -130,8 +121,12 @@ struct MacInteractionBarView: View {
             }
             .foregroundStyle(selected ? activeColor : (capabilities.canVotePosts ? Color.primary : Color.secondary))
             .frame(maxWidth: .infinity)
+            .padding(.vertical, 4)
+            .contentShape(Rectangle())
         }
-        .buttonStyle(.bordered)
+        .buttonStyle(.plain)
+        .background(Color(nsColor: .textBackgroundColor).opacity(0.55))
+        .clipShape(RoundedRectangle(cornerRadius: 5, style: .continuous))
         .disabled(!capabilities.canVotePosts || loadingVote != nil)
         .help(capabilities.canVotePosts ? title : "Configure API authentication to enable voting")
     }
