@@ -19,6 +19,10 @@ struct ContentView: View {
     @State private var isLoadingFilters = false
     @State private var commentsRoute: MacCommentsRoute?
 
+    private let sourceVisibleRowLimit = 6
+    private let sourceRowHeight: CGFloat = 30
+    private let sourceRowSpacing: CGFloat = 4
+
     init(settingsStore: SettingsStore) {
         self.settingsStore = settingsStore
         _viewModel = StateObject(wrappedValue: GalleryViewModel(settingsStore: settingsStore))
@@ -196,40 +200,56 @@ struct ContentView: View {
     }
 
     private var sourceList: some View {
-        VStack(spacing: 4) {
-            ForEach(settingsStore.sites) { site in
-                Button {
-                    isShowingSources = false
-                    Task {
-                        await viewModel.selectSite(site.id)
-                    }
-                } label: {
-                    HStack(spacing: 8) {
-                        Text(site.name)
-                            .lineLimit(1)
+        ScrollViewReader { proxy in
+            ScrollView(
+                .vertical,
+                showsIndicators: settingsStore.sites.count > sourceVisibleRowLimit
+            ) {
+                LazyVStack(spacing: sourceRowSpacing) {
+                    ForEach(settingsStore.sites) { site in
+                        Button {
+                            isShowingSources = false
+                            Task {
+                                await viewModel.selectSite(site.id)
+                            }
+                        } label: {
+                            HStack(spacing: 8) {
+                                Text(site.name)
+                                    .lineLimit(1)
 
-                        Spacer()
+                                Spacer()
 
-                        Text(site.resolvedProtocol.displayName)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                                Text(site.resolvedProtocol.displayName)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
 
-                        if settingsStore.hasUsableAuthentication(for: site) {
-                            Image(systemName: "key.fill")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                                if settingsStore.hasUsableAuthentication(for: site) {
+                                    Image(systemName: "key.fill")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+
+                                if viewModel.selectedSiteID == site.id {
+                                    Image(systemName: "checkmark")
+                                        .foregroundStyle(.tint)
+                                }
+                            }
+                            .frame(height: sourceRowHeight)
+                            .padding(.horizontal, 10)
+                            .contentShape(Rectangle())
                         }
-
-                        if viewModel.selectedSiteID == site.id {
-                            Image(systemName: "checkmark")
-                                .foregroundStyle(.tint)
-                        }
+                        .buttonStyle(.plain)
+                        .id(site.id)
                     }
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 6)
-                    .contentShape(Rectangle())
                 }
-                .buttonStyle(.plain)
+            }
+            .frame(height: sourceListHeight)
+            .onAppear {
+                if settingsStore.sites.count > sourceVisibleRowLimit {
+                    DispatchQueue.main.async {
+                        proxy.scrollTo(viewModel.selectedSiteID, anchor: .center)
+                    }
+                }
             }
         }
         .padding(6)
@@ -239,6 +259,15 @@ struct ContentView: View {
             RoundedRectangle(cornerRadius: 8, style: .continuous)
                 .stroke(Color(nsColor: .separatorColor), lineWidth: 0.5)
         }
+    }
+
+    private var sourceListHeight: CGFloat {
+        let visibleRows = min(settingsStore.sites.count, sourceVisibleRowLimit)
+        guard visibleRows > 0 else { return 0 }
+
+        let rowsHeight = CGFloat(visibleRows) * sourceRowHeight
+        let spacingHeight = CGFloat(max(visibleRows - 1, 0)) * sourceRowSpacing
+        return rowsHeight + spacingHeight
     }
 
     private var filterControl: some View {
