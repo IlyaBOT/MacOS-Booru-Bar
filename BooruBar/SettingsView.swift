@@ -30,21 +30,9 @@ struct SettingsView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            HStack {
-                Text("Settings")
-                    .font(.title2.bold())
-
-                Spacer()
-
-                Button("Apply") {
-                    applyAndClose()
-                }
-                .keyboardShortcut(.defaultAction)
-            }
-
+            header
             Toggle("Allow NSFW content", isOn: nsfwBinding)
             Toggle("Play animations and videos", isOn: playAnimatedMediaBinding)
-
             Divider()
 
             HStack(spacing: 16) {
@@ -58,7 +46,7 @@ struct SettingsView: View {
             loadDraftsIfNeeded()
         }
         .onChange(of: selectedSiteID) { newValue in
-            guard let newValue, !isAddingSite else {
+            guard let newValue = newValue, !isAddingSite else {
                 return
             }
 
@@ -69,6 +57,20 @@ struct SettingsView: View {
             if let detectedAPIType = detectedAPIType(for: newValue) {
                 apiType = detectedAPIType
             }
+        }
+    }
+
+    private var header: some View {
+        HStack {
+            Text("Settings")
+                .font(.title2.bold())
+
+            Spacer()
+
+            Button("Apply") {
+                applyAndClose()
+            }
+            .keyboardShortcut(.defaultAction)
         }
     }
 
@@ -108,7 +110,7 @@ struct SettingsView: View {
                             .font(.caption)
                             .foregroundStyle(.secondary)
 
-                        if (draftAuthenticationModes[site.id] ?? BooruAuthenticationMode.none) != BooruAuthenticationMode.none {
+                        if (draftAuthenticationModes[site.id] ?? .none) != .none {
                             Image(systemName: authenticationIcon(for: site.id))
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
@@ -129,19 +131,23 @@ struct SettingsView: View {
             } else if editingSiteID != nil {
                 editorFields(title: "Edit Site")
             } else {
-                VStack(spacing: 10) {
-                    Image(systemName: "globe")
-                        .font(.system(size: 30, weight: .semibold))
-                        .foregroundStyle(.secondary)
-
-                    Text("Select a booru site or add a new one.")
-                        .font(.callout)
-                        .multilineTextAlignment(.center)
-                        .foregroundStyle(.secondary)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                emptyEditorState
             }
         }
+    }
+
+    private var emptyEditorState: some View {
+        VStack(spacing: 10) {
+            Image(systemName: "globe")
+                .font(.system(size: 30, weight: .semibold))
+                .foregroundStyle(.secondary)
+
+            Text("Select a booru site or add a new one.")
+                .font(.callout)
+                .multilineTextAlignment(.center)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private func editorFields(title: String, showsAddActions: Bool = false) -> some View {
@@ -150,65 +156,15 @@ struct SettingsView: View {
                 Text(title)
                     .font(.headline)
 
-                TextField("Display name", text: $name)
-                TextField("Base URL", text: $baseURLString)
-
-                HStack(spacing: 8) {
-                    Text("API:")
-                        .foregroundStyle(.secondary)
-
-                    Picker("API", selection: $apiType) {
-                        ForEach(BooruProtocol.allCases) { type in
-                            Text(type.displayName).tag(type)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                    .labelsHidden()
-
-                    Spacer()
-                }
-
+                sourceFields
                 Divider()
-
-                Text("Authorization")
-                    .font(.headline)
-
-                Picker("Authorization", selection: $authenticationMode) {
-                    ForEach(BooruAuthenticationMode.allCases) { mode in
-                        Text(mode.displayName).tag(mode)
-                    }
-                }
-                .pickerStyle(.segmented)
-
-                authenticationFields
-
-                Text(authenticationFooter)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                if apiType == .shimmie {
-                    Text("Shimmie does not define a universal rating field, so the global NSFW filter cannot be guaranteed on arbitrary installations.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
+                authorizationSection
 
                 if showsAddActions {
-                    HStack {
-                        Button("Cancel") {
-                            cancelNewSite()
-                        }
-
-                        Spacer()
-
-                        Button("Add") {
-                            addDraftSite()
-                        }
-                    }
+                    addActions
                 }
 
-                if let errorMessage {
+                if let errorMessage = errorMessage {
                     Text(errorMessage)
                         .font(.callout)
                         .foregroundStyle(.red)
@@ -216,6 +172,70 @@ struct SettingsView: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    private var sourceFields: some View {
+        Group {
+            TextField("Display name", text: $name)
+            TextField("Base URL", text: $baseURLString)
+
+            HStack(spacing: 8) {
+                Text("API:")
+                    .foregroundStyle(.secondary)
+
+                Picker("API", selection: $apiType) {
+                    ForEach(BooruProtocol.allCases) { type in
+                        Text(type.displayName).tag(type)
+                    }
+                }
+                .pickerStyle(.menu)
+                .labelsHidden()
+
+                Spacer()
+            }
+        }
+    }
+
+    private var authorizationSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Authorization")
+                .font(.headline)
+
+            Picker("Authorization", selection: $authenticationMode) {
+                ForEach(BooruAuthenticationMode.allCases) { mode in
+                    Text(mode.displayName).tag(mode)
+                }
+            }
+            .pickerStyle(.segmented)
+
+            authenticationFields
+
+            Text(authenticationFooter)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            if apiType == .shimmie {
+                Text("Shimmie does not define a universal rating field, so the global NSFW filter cannot be guaranteed on arbitrary installations.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+    }
+
+    private var addActions: some View {
+        HStack {
+            Button("Cancel") {
+                cancelNewSite()
+            }
+
+            Spacer()
+
+            Button("Add") {
+                addDraftSite()
+            }
         }
     }
 
@@ -230,12 +250,16 @@ struct SettingsView: View {
         case .apiKey:
             switch apiType {
             case .e621, .danbooru:
-                TextField("Username", text: $username)
-                SecureField("API Key", text: $apiKey)
+                Group {
+                    TextField("Username", text: $username)
+                    SecureField("API Key", text: $apiKey)
+                }
 
             case .gelbooru:
-                TextField("User ID", text: $userID)
-                SecureField("API Key", text: $apiKey)
+                Group {
+                    TextField("User ID", text: $userID)
+                    SecureField("API Key", text: $apiKey)
+                }
 
             case .philomena:
                 SecureField("API Key", text: $apiKey)
@@ -245,13 +269,15 @@ struct SettingsView: View {
             }
 
         case .credentials:
-            TextField("Username / Email", text: $username)
-            SecureField("Password", text: $password)
+            VStack(alignment: .leading, spacing: 8) {
+                TextField("Username / Email", text: $username)
+                SecureField("Password", text: $password)
 
-            Text("Credentials are stored in Keychain. They are available for site-specific browser/session authorization; public APIs do not provide one universal username/password write flow.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
+                Text("Credentials are stored in Keychain. They are available for site-specific browser/session authorization; public APIs do not provide one universal username/password write flow.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
         }
     }
 
@@ -294,7 +320,7 @@ struct SettingsView: View {
     }
 
     private var selectedSite: BooruSite? {
-        guard let selectedSiteID else { return nil }
+        guard let selectedSiteID = selectedSiteID else { return nil }
         return draftSites.first { $0.id == selectedSiteID }
     }
 
@@ -338,10 +364,6 @@ struct SettingsView: View {
         draftAuthenticationModes[site.id] = storedMode
         draftPasswords[site.id] = storedPassword
 
-        // Older macOS builds stored e621/Danbooru as `username:key` and
-        // Gelbooru as `userID:key` in the single API-key field. Split that
-        // representation in the editor so the next Apply migrates it into the
-        // per-field Keychain layout shared with iOS.
         if storedMode == .apiKey,
            storedKey.contains(":"),
            let separator = storedKey.firstIndex(of: ":") {
@@ -349,17 +371,21 @@ struct SettingsView: View {
             let second = String(storedKey[storedKey.index(after: separator)...])
 
             switch site.resolvedProtocol {
-            case .e621, .danbooru where storedUsername.isEmpty:
-                draftUsernames[site.id] = first
-                draftUserIDs[site.id] = storedUserID
-                draftAPIKeys[site.id] = second
-                return
+            case .e621, .danbooru:
+                if storedUsername.isEmpty {
+                    draftUsernames[site.id] = first
+                    draftUserIDs[site.id] = storedUserID
+                    draftAPIKeys[site.id] = second
+                    return
+                }
 
-            case .gelbooru where storedUserID.isEmpty:
-                draftUsernames[site.id] = storedUsername
-                draftUserIDs[site.id] = first
-                draftAPIKeys[site.id] = second
-                return
+            case .gelbooru:
+                if storedUserID.isEmpty {
+                    draftUsernames[site.id] = storedUsername
+                    draftUserIDs[site.id] = first
+                    draftAPIKeys[site.id] = second
+                    return
+                }
 
             default:
                 break
@@ -394,7 +420,7 @@ struct SettingsView: View {
         isAddingSite = false
         errorMessage = nil
 
-        if let selectedSiteID,
+        if let selectedSiteID = selectedSiteID,
            draftSites.contains(where: { $0.id == selectedSiteID }) {
             selectDraftSite(selectedSiteID)
         } else if draftSites.contains(where: { $0.id == settingsStore.selectedSiteID }) {
@@ -438,7 +464,7 @@ struct SettingsView: View {
     }
 
     private func stageCurrentEdit(showErrors: Bool) -> Bool {
-        guard !isAddingSite, let editingSiteID else {
+        guard !isAddingSite, let editingSiteID = editingSiteID else {
             return true
         }
 
@@ -537,7 +563,7 @@ struct SettingsView: View {
                 )
             }
 
-            if let desiredSelectedSiteID,
+            if let desiredSelectedSiteID = desiredSelectedSiteID,
                settingsStore.sites.contains(where: { $0.id == desiredSelectedSiteID }) {
                 settingsStore.selectedSiteID = desiredSelectedSiteID
             } else if let firstSiteID = settingsStore.sites.first?.id {
