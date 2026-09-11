@@ -17,6 +17,7 @@ struct ContentView: View {
     @State private var isShowingFilters = false
     @State private var filterOptions: [BooruFilterOption] = []
     @State private var isLoadingFilters = false
+    @State private var commentsRoute: MacCommentsRoute?
 
     init(settingsStore: SettingsStore) {
         self.settingsStore = settingsStore
@@ -24,13 +25,30 @@ struct ContentView: View {
     }
 
     var body: some View {
-        Group {
-            if isShowingSettings {
-                SettingsView(settingsStore: settingsStore) {
-                    isShowingSettings = false
+        ZStack {
+            Group {
+                if isShowingSettings {
+                    SettingsView(settingsStore: settingsStore) {
+                        isShowingSettings = false
+                    }
+                } else {
+                    mainContent
                 }
-            } else {
-                mainContent
+            }
+
+            if let commentsRoute = commentsRoute {
+                MacCommentsView(
+                    image: commentsRoute.image,
+                    site: commentsRoute.site,
+                    settingsStore: settingsStore,
+                    onDismiss: {
+                        self.commentsRoute = nil
+                    }
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color(nsColor: .windowBackgroundColor))
+                .transition(.opacity)
+                .zIndex(10)
             }
         }
         .frame(width: 460, height: 720)
@@ -94,7 +112,19 @@ struct ContentView: View {
                 viewModel: viewModel,
                 playAnimatedMedia: settingsStore.playAnimatedMedia,
                 site: selectedSite,
-                settingsStore: settingsStore
+                settingsStore: settingsStore,
+                onOpenComments: { image in
+                    guard let selectedSite = selectedSite else {
+                        return
+                    }
+
+                    isShowingSources = false
+                    isShowingFilters = false
+                    commentsRoute = MacCommentsRoute(
+                        image: image,
+                        site: selectedSite
+                    )
+                }
             )
         }
         .padding(14)
@@ -247,7 +277,7 @@ struct ContentView: View {
         VStack(spacing: 4) {
             ForEach(filterOptions) { filter in
                 Button {
-                    guard let selectedSite else {
+                    guard let selectedSite = selectedSite else {
                         return
                     }
 
@@ -291,7 +321,7 @@ struct ContentView: View {
     }
 
     private var currentFilterName: String {
-        guard let selectedSite else {
+        guard let selectedSite = selectedSite else {
             return "Site default"
         }
 
@@ -306,7 +336,7 @@ struct ContentView: View {
     }
 
     private func isSelected(_ filter: BooruFilterOption) -> Bool {
-        guard let selectedSite else { return false }
+        guard let selectedSite = selectedSite else { return false }
         let selectedID = settingsStore.selectedFilterID(for: selectedSite)
 
         if filter.id == BooruFilterOption.allRatingsID {
@@ -317,7 +347,7 @@ struct ContentView: View {
 
     @MainActor
     private func reloadFilterOptions() async {
-        guard let selectedSite else {
+        guard let selectedSite = selectedSite else {
             filterOptions = []
             return
         }
@@ -354,6 +384,12 @@ struct ContentView: View {
             }
         )
     }
+}
+
+@available(macOS 12.0, *)
+private struct MacCommentsRoute {
+    let image: BooruImage
+    let site: BooruSite
 }
 
 struct ContentView_Previews: PreviewProvider {
