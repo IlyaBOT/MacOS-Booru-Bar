@@ -31,13 +31,18 @@ struct SettingsView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             header
-            Toggle("Allow NSFW content", isOn: nsfwBinding)
-            Toggle("Play animations and videos", isOn: playAnimatedMediaBinding)
+
+            VStack(alignment: .leading, spacing: 8) {
+                Toggle("Allow NSFW content", isOn: nsfwBinding)
+                Toggle("Play animations and videos", isOn: playAnimatedMediaBinding)
+            }
+
             Divider()
 
-            HStack(spacing: 16) {
+            HStack(alignment: .top, spacing: 12) {
                 siteList
                 editorPanel
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             }
         }
         .padding(18)
@@ -100,19 +105,21 @@ struct SettingsView: View {
 
             List(selection: $selectedSiteID) {
                 ForEach(draftSites) { site in
-                    HStack(spacing: 6) {
+                    HStack(spacing: 5) {
                         Text(site.name)
                             .lineLimit(1)
+                            .truncationMode(.tail)
 
-                        Spacer()
+                        Spacer(minLength: 4)
 
                         Text(site.resolvedProtocol.displayName)
-                            .font(.caption)
+                            .font(.caption2)
                             .foregroundStyle(.secondary)
+                            .lineLimit(1)
 
                         if (draftAuthenticationModes[site.id] ?? .none) != .none {
                             Image(systemName: authenticationIcon(for: site.id))
-                                .font(.caption)
+                                .font(.caption2)
                                 .foregroundStyle(.secondary)
                         }
                     }
@@ -120,24 +127,24 @@ struct SettingsView: View {
                 }
             }
         }
-        .frame(width: 210)
+        .frame(width: 180)
     }
 
     @ViewBuilder
     private var editorPanel: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            if isAddingSite {
-                editorFields(title: "Add Site", showsAddActions: true)
-            } else if editingSiteID != nil {
-                editorFields(title: "Edit Site")
-            } else {
-                emptyEditorState
-            }
+        if isAddingSite {
+            editorFields(title: "Add Site", showsAddActions: true)
+        } else if editingSiteID != nil {
+            editorFields(title: "Edit Site")
+        } else {
+            emptyEditorState
         }
     }
 
     private var emptyEditorState: some View {
         VStack(spacing: 10) {
+            Spacer()
+
             Image(systemName: "globe")
                 .font(.system(size: 30, weight: .semibold))
                 .foregroundStyle(.secondary)
@@ -146,6 +153,8 @@ struct SettingsView: View {
                 .font(.callout)
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
+
+            Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -157,7 +166,9 @@ struct SettingsView: View {
                     .font(.headline)
 
                 sourceFields
+
                 Divider()
+
                 authorizationSection
 
                 if showsAddActions {
@@ -172,13 +183,17 @@ struct SettingsView: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.trailing, 2)
         }
     }
 
     private var sourceFields: some View {
-        Group {
+        VStack(alignment: .leading, spacing: 8) {
             TextField("Display name", text: $name)
+                .textFieldStyle(.roundedBorder)
+
             TextField("Base URL", text: $baseURLString)
+                .textFieldStyle(.roundedBorder)
 
             HStack(spacing: 8) {
                 Text("API:")
@@ -191,10 +206,10 @@ struct SettingsView: View {
                 }
                 .pickerStyle(.menu)
                 .labelsHidden()
-
-                Spacer()
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var authorizationSection: some View {
@@ -208,21 +223,25 @@ struct SettingsView: View {
                 }
             }
             .pickerStyle(.segmented)
+            .labelsHidden()
+            .frame(maxWidth: .infinity)
 
             authenticationFields
+                .frame(maxWidth: .infinity, alignment: .leading)
 
             Text(authenticationFooter)
-                .font(.caption)
+                .font(.caption2)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
 
             if apiType == .shimmie {
                 Text("Shimmie does not define a universal rating field, so the global NSFW filter cannot be guaranteed on arbitrary installations.")
-                    .font(.caption)
+                    .font(.caption2)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var addActions: some View {
@@ -243,38 +262,52 @@ struct SettingsView: View {
     private var authenticationFields: some View {
         switch authenticationMode {
         case .none:
-            Text("Browsing remains anonymous. Account-only actions are disabled.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Browsing remains anonymous. Account-only actions are disabled.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
 
         case .apiKey:
             switch apiType {
             case .e621, .danbooru:
-                Group {
+                VStack(alignment: .leading, spacing: 8) {
                     TextField("Username", text: $username)
+                        .textFieldStyle(.roundedBorder)
                     SecureField("API Key", text: $apiKey)
+                        .textFieldStyle(.roundedBorder)
                 }
 
             case .gelbooru:
-                Group {
+                VStack(alignment: .leading, spacing: 8) {
                     TextField("User ID", text: $userID)
+                        .textFieldStyle(.roundedBorder)
                     SecureField("API Key", text: $apiKey)
+                        .textFieldStyle(.roundedBorder)
                 }
 
             case .philomena:
-                SecureField("API Key", text: $apiKey)
+                VStack(alignment: .leading, spacing: 8) {
+                    SecureField("API Key", text: $apiKey)
+                        .textFieldStyle(.roundedBorder)
+                }
 
             case .moebooru, .shimmie:
-                SecureField("API Key / Token (optional)", text: $apiKey)
+                VStack(alignment: .leading, spacing: 8) {
+                    SecureField("API Key / Token (optional)", text: $apiKey)
+                        .textFieldStyle(.roundedBorder)
+                }
             }
 
         case .credentials:
             VStack(alignment: .leading, spacing: 8) {
                 TextField("Username / Email", text: $username)
+                    .textFieldStyle(.roundedBorder)
                 SecureField("Password", text: $password)
+                    .textFieldStyle(.roundedBorder)
 
                 Text("Credentials are stored in Keychain. They are available for site-specific browser/session authorization; public APIs do not provide one universal username/password write flow.")
-                    .font(.caption)
+                    .font(.caption2)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
