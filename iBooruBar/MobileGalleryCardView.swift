@@ -76,7 +76,7 @@ struct MobileGalleryCardView: View {
         .task(id: interactionTaskID) {
             await loadPostStateIfUseful()
         }
-        .fullScreenCover(isPresented: $showingComments) {
+        .sheet(isPresented: $showingComments) {
             if let site {
                 MobileCommentsSheetHost(
                     image: image,
