@@ -108,7 +108,7 @@ struct SettingsView: View {
                             .font(.caption)
                             .foregroundStyle(.secondary)
 
-                        if draftAuthenticationModes[site.id] != .none {
+                        if (draftAuthenticationModes[site.id] ?? BooruAuthenticationMode.none) != BooruAuthenticationMode.none {
                             Image(systemName: authenticationIcon(for: site.id))
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
@@ -316,11 +316,7 @@ struct SettingsView: View {
         draftSites = settingsStore.sites
 
         for site in draftSites {
-            draftAPIKeys[site.id] = settingsStore.apiKey(for: site) ?? ""
-            draftUsernames[site.id] = settingsStore.username(for: site) ?? ""
-            draftPasswords[site.id] = settingsStore.password(for: site) ?? ""
-            draftUserIDs[site.id] = settingsStore.userID(for: site) ?? ""
-            draftAuthenticationModes[site.id] = settingsStore.authenticationMode(for: site)
+            loadAuthenticationDraft(for: site)
         }
 
         if draftSites.contains(where: { $0.id == settingsStore.selectedSiteID }) {
@@ -330,6 +326,49 @@ struct SettingsView: View {
         } else {
             clearEditor()
         }
+    }
+
+    private func loadAuthenticationDraft(for site: BooruSite) {
+        let storedMode = settingsStore.authenticationMode(for: site)
+        let storedUsername = settingsStore.username(for: site) ?? ""
+        let storedPassword = settingsStore.password(for: site) ?? ""
+        let storedUserID = settingsStore.userID(for: site) ?? ""
+        let storedKey = settingsStore.apiKey(for: site) ?? ""
+
+        draftAuthenticationModes[site.id] = storedMode
+        draftPasswords[site.id] = storedPassword
+
+        // Older macOS builds stored e621/Danbooru as `username:key` and
+        // Gelbooru as `userID:key` in the single API-key field. Split that
+        // representation in the editor so the next Apply migrates it into the
+        // per-field Keychain layout shared with iOS.
+        if storedMode == .apiKey,
+           storedKey.contains(":"),
+           let separator = storedKey.firstIndex(of: ":") {
+            let first = String(storedKey[..<separator])
+            let second = String(storedKey[storedKey.index(after: separator)...])
+
+            switch site.resolvedProtocol {
+            case .e621, .danbooru where storedUsername.isEmpty:
+                draftUsernames[site.id] = first
+                draftUserIDs[site.id] = storedUserID
+                draftAPIKeys[site.id] = second
+                return
+
+            case .gelbooru where storedUserID.isEmpty:
+                draftUsernames[site.id] = storedUsername
+                draftUserIDs[site.id] = first
+                draftAPIKeys[site.id] = second
+                return
+
+            default:
+                break
+            }
+        }
+
+        draftUsernames[site.id] = storedUsername
+        draftUserIDs[site.id] = storedUserID
+        draftAPIKeys[site.id] = storedKey
     }
 
     private func startNewSite() {
