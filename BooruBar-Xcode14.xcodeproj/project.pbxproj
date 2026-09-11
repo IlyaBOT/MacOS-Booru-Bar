@@ -6,6 +6,51 @@
 	objectVersion = 56;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		0396A744D3E824F2A13E4C60 /* MobileCommentsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C11EEABBE34173606DA9CF /* MobileCommentsView.swift */; };
+		07EC7EB4DD920FD68DD7B8F9 /* MobileGalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC0242BA162E8B511DC5D85 /* MobileGalleryView.swift */; };
+		08168BEDDF1BBFE6FBAFD1A1 /* GalleryCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EAFCB71ACC70117A585FCBE /* GalleryCardView.swift */; };
+		0D282A1BF7BA54E8F249F67F /* E621Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8817E985153236A29AE32C9E /* E621Client.swift */; };
+		180977E602D2CE5DE3A8BC79 /* BooruImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9485C85046F3B5FB2D11F456 /* BooruImage.swift */; };
+		1A893889CCBF9B31C08AA5C8 /* BooruFilterOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9290B3F19F15763610F88D /* BooruFilterOption.swift */; };
+		1FA85D132607DE4998D806EC /* MobileContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21BCA23D585B2CEF75CA0CED /* MobileContentView.swift */; };
+		221960A8129507989317C8AA /* MobileSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEE1F46FEF3BE7DC011061EA /* MobileSettingsView.swift */; };
+		247F06DD48BC6B4D65866222 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6516786BB80A41B1A43F8606 /* SettingsStore.swift */; };
+		24CC12D909E414ED790B3C42 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC4CE6EF0008A2DC7FBBDF8B /* KeychainStore.swift */; };
+		2AB555AF2CA45FCE0852F95D /* BooruBarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D94F6089AFC82CE29A2B6D /* BooruBarApp.swift */; };
+		2C9F4FC0DB68E900462611F0 /* GelbooruDapiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71DF25328B323D61DC538243 /* GelbooruDapiClient.swift */; };
+		32D9ED9A9ED37EA225C3A60C /* GelbooruCommentsClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2230C053EE678ABC2CF14F47 /* GelbooruCommentsClient.swift */; };
+		35847E27559A4C00FDFE6ED0 /* BooruFilterOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9290B3F19F15763610F88D /* BooruFilterOption.swift */; };
+		37B25889A4CDD9BA02016A6F /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6516786BB80A41B1A43F8606 /* SettingsStore.swift */; };
+		51B48C004DF81F87C34A383D /* MobileGalleryCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82ABC004E94DEDAA944B4451 /* MobileGalleryCardView.swift */; };
+		5974CAC5F6E4EC5259122EEF /* BooruSite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91A7EF04A45CB9D08435B029 /* BooruSite.swift */; };
+		6017146A8B3D22F91FEF6A8C /* GalleryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7598DA3E42BAB57099C15A5 /* GalleryViewModel.swift */; };
+		640FC9CF2AE7A9C59355679E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 71114E97761BCAB8142CD4D6 /* Assets.xcassets */; };
+		7078C007BCBE33D6701EF32D /* E621Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8817E985153236A29AE32C9E /* E621Client.swift */; };
+		775CB1A062F704521CC0457A /* PhilomenaClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB9EBC9A75EA6EB051B3043 /* PhilomenaClient.swift */; };
+		7B964483C6756EC8A11B0DF6 /* URLQueryBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FA094EFAFCD5560BE156EC /* URLQueryBuilder.swift */; };
+		7F4F62CE274FCFF14857E72F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 98E6621E6C06E560002B7879 /* Assets.xcassets */; };
+		84A65882E9790EE6C26401C3 /* LegacyGelbooruClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3954E65EEABCBE9F2365C3 /* LegacyGelbooruClient.swift */; };
+		8B7A90DB14B8A0471B880524 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CE6D2A527F31AFD7FA2DD17 /* SearchView.swift */; };
+		8EB31D656E5B4915E11E0808 /* MobileSiteEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF64069B34C9F9F6DABF81D6 /* MobileSiteEditorView.swift */; };
+		923C346A77526A26DBF9342B /* BooruClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6A674F43C1EA2C7318490A2 /* BooruClient.swift */; };
+		B70449777D16C35DE653C604 /* BooruInteractions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E62ED4E2823B05093C0228 /* BooruInteractions.swift */; };
+		B90376800526CC0E7C79CF32 /* PhilomenaClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB9EBC9A75EA6EB051B3043 /* PhilomenaClient.swift */; };
+		BA47120875AAFF23EE1E045A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF1E96BED5B0A2520B38AE3 /* ContentView.swift */; };
+		C2132CC2A4BA4344CF2146DE /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF1F0449D9671A5578EF58C1 /* SettingsView.swift */; };
+		C9A837290C454037D72DDCDC /* iBooruBarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506147A0E08A665C94A57CC5 /* iBooruBarApp.swift */; };
+		CA931F445225EE3D96597D89 /* GelbooruDapiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71DF25328B323D61DC538243 /* GelbooruDapiClient.swift */; };
+		CF1E0DCB52BDB7C41962AD61 /* URLQueryBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FA094EFAFCD5560BE156EC /* URLQueryBuilder.swift */; };
+		CF2113EC8B92768EB181A7A5 /* GalleryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7598DA3E42BAB57099C15A5 /* GalleryViewModel.swift */; };
+		D4A8F9733A138459F7D54383 /* LegacyGelbooruClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3954E65EEABCBE9F2365C3 /* LegacyGelbooruClient.swift */; };
+		D7CAE87739221DBE40D97F0D /* BooruImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9485C85046F3B5FB2D11F456 /* BooruImage.swift */; };
+		D8269EA73B6CCAA3E1D2A15F /* GalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE249FE15233B0BB2F819F0F /* GalleryView.swift */; };
+		DD36BC9B050471FAD0E8DDE7 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC4CE6EF0008A2DC7FBBDF8B /* KeychainStore.swift */; };
+		DEE2DCAC6F48FF8307F7E4A5 /* MobileSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E656588295E34B826771831 /* MobileSearchView.swift */; };
+		ECC17FB39EF5F33E5BC6CE39 /* BooruSite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91A7EF04A45CB9D08435B029 /* BooruSite.swift */; };
+		F036D66C66B4B74A22D2ACAF /* BooruClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6A674F43C1EA2C7318490A2 /* BooruClient.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		C1A519822FE846F700635089 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -37,101 +82,44 @@
 		};
 /* End PBXContainerItemProxy section */
 
-/* Begin PBXBuildFile section */
-		2AB555AF2CA45FCE0852F95D /* BooruBarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D94F6089AFC82CE29A2B6D /* BooruBarApp.swift */; };
-		BA47120875AAFF23EE1E045A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF1E96BED5B0A2520B38AE3 /* ContentView.swift */; };
-		08168BEDDF1BBFE6FBAFD1A1 /* GalleryCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EAFCB71ACC70117A585FCBE /* GalleryCardView.swift */; };
-		D8269EA73B6CCAA3E1D2A15F /* GalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE249FE15233B0BB2F819F0F /* GalleryView.swift */; };
-		35847E27559A4C00FDFE6ED0 /* BooruFilterOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9290B3F19F15763610F88D /* BooruFilterOption.swift */; };
-		D7CAE87739221DBE40D97F0D /* BooruImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9485C85046F3B5FB2D11F456 /* BooruImage.swift */; };
-		5974CAC5F6E4EC5259122EEF /* BooruSite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91A7EF04A45CB9D08435B029 /* BooruSite.swift */; };
-		923C346A77526A26DBF9342B /* BooruClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6A674F43C1EA2C7318490A2 /* BooruClient.swift */; };
-		7078C007BCBE33D6701EF32D /* E621Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8817E985153236A29AE32C9E /* E621Client.swift */; };
-		CA931F445225EE3D96597D89 /* GelbooruDapiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71DF25328B323D61DC538243 /* GelbooruDapiClient.swift */; };
-		D4A8F9733A138459F7D54383 /* LegacyGelbooruClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3954E65EEABCBE9F2365C3 /* LegacyGelbooruClient.swift */; };
-		B90376800526CC0E7C79CF32 /* PhilomenaClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB9EBC9A75EA6EB051B3043 /* PhilomenaClient.swift */; };
-		8B7A90DB14B8A0471B880524 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CE6D2A527F31AFD7FA2DD17 /* SearchView.swift */; };
-		C2132CC2A4BA4344CF2146DE /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF1F0449D9671A5578EF58C1 /* SettingsView.swift */; };
-		DD36BC9B050471FAD0E8DDE7 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC4CE6EF0008A2DC7FBBDF8B /* KeychainStore.swift */; };
-		247F06DD48BC6B4D65866222 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6516786BB80A41B1A43F8606 /* SettingsStore.swift */; };
-		7B964483C6756EC8A11B0DF6 /* URLQueryBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FA094EFAFCD5560BE156EC /* URLQueryBuilder.swift */; };
-		6017146A8B3D22F91FEF6A8C /* GalleryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7598DA3E42BAB57099C15A5 /* GalleryViewModel.swift */; };
-		7F4F62CE274FCFF14857E72F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 98E6621E6C06E560002B7879 /* Assets.xcassets */; };
-		1985DD51147FCE325AEE194F /* BooruBarTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAE83E3C35CD8941C08EF87B /* BooruBarTests.swift */; };
-		3081C8F3464F614D24C90BF9 /* BooruBarUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040253E7F3EA94587DDC8067 /* BooruBarUITests.swift */; };
-		5CC19E3B6E33705836E20DA0 /* BooruBarUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7523D82CC0EC00B2E8B1C69D /* BooruBarUITestsLaunchTests.swift */; };
-		B70449777D16C35DE653C604 /* BooruInteractions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E62ED4E2823B05093C0228 /* BooruInteractions.swift */; };
-		32D9ED9A9ED37EA225C3A60C /* GelbooruCommentsClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2230C053EE678ABC2CF14F47 /* GelbooruCommentsClient.swift */; };
-		0396A744D3E824F2A13E4C60 /* MobileCommentsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C11EEABBE34173606DA9CF /* MobileCommentsView.swift */; };
-		1FA85D132607DE4998D806EC /* MobileContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21BCA23D585B2CEF75CA0CED /* MobileContentView.swift */; };
-		51B48C004DF81F87C34A383D /* MobileGalleryCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82ABC004E94DEDAA944B4451 /* MobileGalleryCardView.swift */; };
-		07EC7EB4DD920FD68DD7B8F9 /* MobileGalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC0242BA162E8B511DC5D85 /* MobileGalleryView.swift */; };
-		DEE2DCAC6F48FF8307F7E4A5 /* MobileSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E656588295E34B826771831 /* MobileSearchView.swift */; };
-		221960A8129507989317C8AA /* MobileSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEE1F46FEF3BE7DC011061EA /* MobileSettingsView.swift */; };
-		8EB31D656E5B4915E11E0808 /* MobileSiteEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF64069B34C9F9F6DABF81D6 /* MobileSiteEditorView.swift */; };
-		C9A837290C454037D72DDCDC /* iBooruBarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506147A0E08A665C94A57CC5 /* iBooruBarApp.swift */; };
-		1A893889CCBF9B31C08AA5C8 /* BooruFilterOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9290B3F19F15763610F88D /* BooruFilterOption.swift */; };
-		180977E602D2CE5DE3A8BC79 /* BooruImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9485C85046F3B5FB2D11F456 /* BooruImage.swift */; };
-		ECC17FB39EF5F33E5BC6CE39 /* BooruSite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91A7EF04A45CB9D08435B029 /* BooruSite.swift */; };
-		F036D66C66B4B74A22D2ACAF /* BooruClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6A674F43C1EA2C7318490A2 /* BooruClient.swift */; };
-		0D282A1BF7BA54E8F249F67F /* E621Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8817E985153236A29AE32C9E /* E621Client.swift */; };
-		2C9F4FC0DB68E900462611F0 /* GelbooruDapiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71DF25328B323D61DC538243 /* GelbooruDapiClient.swift */; };
-		84A65882E9790EE6C26401C3 /* LegacyGelbooruClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3954E65EEABCBE9F2365C3 /* LegacyGelbooruClient.swift */; };
-		775CB1A062F704521CC0457A /* PhilomenaClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB9EBC9A75EA6EB051B3043 /* PhilomenaClient.swift */; };
-		24CC12D909E414ED790B3C42 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC4CE6EF0008A2DC7FBBDF8B /* KeychainStore.swift */; };
-		37B25889A4CDD9BA02016A6F /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6516786BB80A41B1A43F8606 /* SettingsStore.swift */; };
-		CF1E0DCB52BDB7C41962AD61 /* URLQueryBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FA094EFAFCD5560BE156EC /* URLQueryBuilder.swift */; };
-		CF2113EC8B92768EB181A7A5 /* GalleryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7598DA3E42BAB57099C15A5 /* GalleryViewModel.swift */; };
-		640FC9CF2AE7A9C59355679E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 71114E97761BCAB8142CD4D6 /* Assets.xcassets */; };
-		55172CBAAE9BC6B836B5EBC8 /* iBooruBarTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F8A55BAF2EABF312EF46AA1 /* iBooruBarTests.swift */; };
-		E0108402499821D1459A2FCF /* iBooruBarUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A44560BBDD3A9AAE56080E /* iBooruBarUITests.swift */; };
-		DDF45F018793BCCE9CD83BC8 /* iBooruBarUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B53B32C68DD3CCA96D8340B /* iBooruBarUITestsLaunchTests.swift */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXFileReference section */
+		0E656588295E34B826771831 /* MobileSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileSearchView.swift; sourceTree = "<group>"; };
+		0EAFCB71ACC70117A585FCBE /* GalleryCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryCardView.swift; sourceTree = "<group>"; };
+		1DF1E96BED5B0A2520B38AE3 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		21BCA23D585B2CEF75CA0CED /* MobileContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileContentView.swift; sourceTree = "<group>"; };
+		2230C053EE678ABC2CF14F47 /* GelbooruCommentsClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GelbooruCommentsClient.swift; sourceTree = "<group>"; };
+		23304FF71C798100A8516E7C /* BooruBar.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BooruBar.entitlements; sourceTree = "<group>"; };
+		4CB9EBC9A75EA6EB051B3043 /* PhilomenaClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhilomenaClient.swift; sourceTree = "<group>"; };
+		506147A0E08A665C94A57CC5 /* iBooruBarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iBooruBarApp.swift; sourceTree = "<group>"; };
+		52E62ED4E2823B05093C0228 /* BooruInteractions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BooruInteractions.swift; sourceTree = "<group>"; };
+		57C11EEABBE34173606DA9CF /* MobileCommentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileCommentsView.swift; sourceTree = "<group>"; };
+		6516786BB80A41B1A43F8606 /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
+		71114E97761BCAB8142CD4D6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		71DF25328B323D61DC538243 /* GelbooruDapiClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GelbooruDapiClient.swift; sourceTree = "<group>"; };
+		7CE6D2A527F31AFD7FA2DD17 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
+		82ABC004E94DEDAA944B4451 /* MobileGalleryCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileGalleryCardView.swift; sourceTree = "<group>"; };
+		8817E985153236A29AE32C9E /* E621Client.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = E621Client.swift; sourceTree = "<group>"; };
+		91A7EF04A45CB9D08435B029 /* BooruSite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BooruSite.swift; sourceTree = "<group>"; };
+		9485C85046F3B5FB2D11F456 /* BooruImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BooruImage.swift; sourceTree = "<group>"; };
+		98E6621E6C06E560002B7879 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		9B3954E65EEABCBE9F2365C3 /* LegacyGelbooruClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyGelbooruClient.swift; sourceTree = "<group>"; };
+		9DC0242BA162E8B511DC5D85 /* MobileGalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileGalleryView.swift; sourceTree = "<group>"; };
+		AF64069B34C9F9F6DABF81D6 /* MobileSiteEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileSiteEditorView.swift; sourceTree = "<group>"; };
+		BE9290B3F19F15763610F88D /* BooruFilterOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BooruFilterOption.swift; sourceTree = "<group>"; };
 		C1A519732FE846F300635089 /* BooruBar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BooruBar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C1A519812FE846F700635089 /* BooruBarTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BooruBarTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C1A5198B2FE846F800635089 /* BooruBarUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BooruBarUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C1C398FB3050A4120064F4A6 /* iBooruBar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iBooruBar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C1C399073050A4170064F4A6 /* iBooruBarTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iBooruBarTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C1C399113050A4170064F4A6 /* iBooruBarUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iBooruBarUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		98E6621E6C06E560002B7879 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Assets.xcassets"; sourceTree = "<group>"; };
-		23304FF71C798100A8516E7C /* BooruBar.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "BooruBar.entitlements"; sourceTree = "<group>"; };
-		C3D94F6089AFC82CE29A2B6D /* BooruBarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BooruBarApp.swift"; sourceTree = "<group>"; };
-		1DF1E96BED5B0A2520B38AE3 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContentView.swift"; sourceTree = "<group>"; };
-		0EAFCB71ACC70117A585FCBE /* GalleryCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GalleryCardView.swift"; sourceTree = "<group>"; };
-		EE249FE15233B0BB2F819F0F /* GalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GalleryView.swift"; sourceTree = "<group>"; };
-		BE9290B3F19F15763610F88D /* BooruFilterOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BooruFilterOption.swift"; sourceTree = "<group>"; };
-		9485C85046F3B5FB2D11F456 /* BooruImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BooruImage.swift"; sourceTree = "<group>"; };
-		91A7EF04A45CB9D08435B029 /* BooruSite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BooruSite.swift"; sourceTree = "<group>"; };
-		E6A674F43C1EA2C7318490A2 /* BooruClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BooruClient.swift"; sourceTree = "<group>"; };
-		8817E985153236A29AE32C9E /* E621Client.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "E621Client.swift"; sourceTree = "<group>"; };
-		71DF25328B323D61DC538243 /* GelbooruDapiClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GelbooruDapiClient.swift"; sourceTree = "<group>"; };
-		9B3954E65EEABCBE9F2365C3 /* LegacyGelbooruClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LegacyGelbooruClient.swift"; sourceTree = "<group>"; };
-		4CB9EBC9A75EA6EB051B3043 /* PhilomenaClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PhilomenaClient.swift"; sourceTree = "<group>"; };
-		7CE6D2A527F31AFD7FA2DD17 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchView.swift"; sourceTree = "<group>"; };
-		CF1F0449D9671A5578EF58C1 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SettingsView.swift"; sourceTree = "<group>"; };
-		EC4CE6EF0008A2DC7FBBDF8B /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KeychainStore.swift"; sourceTree = "<group>"; };
-		6516786BB80A41B1A43F8606 /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SettingsStore.swift"; sourceTree = "<group>"; };
-		D9FA094EFAFCD5560BE156EC /* URLQueryBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URLQueryBuilder.swift"; sourceTree = "<group>"; };
-		F7598DA3E42BAB57099C15A5 /* GalleryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GalleryViewModel.swift"; sourceTree = "<group>"; };
-		CAE83E3C35CD8941C08EF87B /* BooruBarTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BooruBarTests.swift"; sourceTree = "<group>"; };
-		040253E7F3EA94587DDC8067 /* BooruBarUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BooruBarUITests.swift"; sourceTree = "<group>"; };
-		7523D82CC0EC00B2E8B1C69D /* BooruBarUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BooruBarUITestsLaunchTests.swift"; sourceTree = "<group>"; };
-		71114E97761BCAB8142CD4D6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Assets.xcassets"; sourceTree = "<group>"; };
-		52E62ED4E2823B05093C0228 /* BooruInteractions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BooruInteractions.swift"; sourceTree = "<group>"; };
-		2230C053EE678ABC2CF14F47 /* GelbooruCommentsClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GelbooruCommentsClient.swift"; sourceTree = "<group>"; };
-		57C11EEABBE34173606DA9CF /* MobileCommentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MobileCommentsView.swift"; sourceTree = "<group>"; };
-		21BCA23D585B2CEF75CA0CED /* MobileContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MobileContentView.swift"; sourceTree = "<group>"; };
-		82ABC004E94DEDAA944B4451 /* MobileGalleryCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MobileGalleryCardView.swift"; sourceTree = "<group>"; };
-		9DC0242BA162E8B511DC5D85 /* MobileGalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MobileGalleryView.swift"; sourceTree = "<group>"; };
-		0E656588295E34B826771831 /* MobileSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MobileSearchView.swift"; sourceTree = "<group>"; };
-		DEE1F46FEF3BE7DC011061EA /* MobileSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MobileSettingsView.swift"; sourceTree = "<group>"; };
-		AF64069B34C9F9F6DABF81D6 /* MobileSiteEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MobileSiteEditorView.swift"; sourceTree = "<group>"; };
-		506147A0E08A665C94A57CC5 /* iBooruBarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "iBooruBarApp.swift"; sourceTree = "<group>"; };
-		4F8A55BAF2EABF312EF46AA1 /* iBooruBarTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "iBooruBarTests.swift"; sourceTree = "<group>"; };
-		C0A44560BBDD3A9AAE56080E /* iBooruBarUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "iBooruBarUITests.swift"; sourceTree = "<group>"; };
-		4B53B32C68DD3CCA96D8340B /* iBooruBarUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "iBooruBarUITestsLaunchTests.swift"; sourceTree = "<group>"; };
+		C3D94F6089AFC82CE29A2B6D /* BooruBarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BooruBarApp.swift; sourceTree = "<group>"; };
+		CF1F0449D9671A5578EF58C1 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		D9FA094EFAFCD5560BE156EC /* URLQueryBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLQueryBuilder.swift; sourceTree = "<group>"; };
+		DEE1F46FEF3BE7DC011061EA /* MobileSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileSettingsView.swift; sourceTree = "<group>"; };
+		E6A674F43C1EA2C7318490A2 /* BooruClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BooruClient.swift; sourceTree = "<group>"; };
+		EC4CE6EF0008A2DC7FBBDF8B /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
+		EE249FE15233B0BB2F819F0F /* GalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryView.swift; sourceTree = "<group>"; };
+		F7598DA3E42BAB57099C15A5 /* GalleryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -180,32 +168,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		C1A5196A2FE846F300635089 = {
-			isa = PBXGroup;
-			children = (
-				0ED7FA453F5F7B321D178716 /* BooruBar */,
-				2647A7D74309AF7D969B0A25 /* BooruBarTests */,
-				09F50773FECEDA553313A71E /* BooruBarUITests */,
-				FBFD6E4E7C2B01C029A7D463 /* iBooruBar */,
-				AB07DA7746B2262144C4EC82 /* iBooruBarTests */,
-				FC4159A724450D21781B8CF1 /* iBooruBarUITests */,
-				C1A519742FE846F300635089 /* Products */,
-			);
-			sourceTree = "<group>";
-		};
-		C1A519742FE846F300635089 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				C1A519732FE846F300635089 /* BooruBar.app */,
-				C1A519812FE846F700635089 /* BooruBarTests.xctest */,
-				C1A5198B2FE846F800635089 /* BooruBarUITests.xctest */,
-				C1C398FB3050A4120064F4A6 /* iBooruBar.app */,
-				C1C399073050A4170064F4A6 /* iBooruBarTests.xctest */,
-				C1C399113050A4170064F4A6 /* iBooruBarUITests.xctest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		0ED7FA453F5F7B321D178716 /* BooruBar */ = {
 			isa = PBXGroup;
 			children = (
@@ -223,17 +185,7 @@
 				98E6621E6C06E560002B7879 /* Assets.xcassets */,
 				23304FF71C798100A8516E7C /* BooruBar.entitlements */,
 			);
-			path = "BooruBar";
-			sourceTree = "<group>";
-		};
-		BDA3FD5A9EF6179AEF960C65 /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				BE9290B3F19F15763610F88D /* BooruFilterOption.swift */,
-				9485C85046F3B5FB2D11F456 /* BooruImage.swift */,
-				91A7EF04A45CB9D08435B029 /* BooruSite.swift */,
-			);
-			path = "Models";
+			path = BooruBar;
 			sourceTree = "<group>";
 		};
 		49F691E35288062468C3610F /* Networking */ = {
@@ -245,7 +197,7 @@
 				9B3954E65EEABCBE9F2365C3 /* LegacyGelbooruClient.swift */,
 				4CB9EBC9A75EA6EB051B3043 /* PhilomenaClient.swift */,
 			);
-			path = "Networking";
+			path = Networking;
 			sourceTree = "<group>";
 		};
 		4C1693BD19200C21CC6BC3DD /* Storage */ = {
@@ -254,7 +206,7 @@
 				EC4CE6EF0008A2DC7FBBDF8B /* KeychainStore.swift */,
 				6516786BB80A41B1A43F8606 /* SettingsStore.swift */,
 			);
-			path = "Storage";
+			path = Storage;
 			sourceTree = "<group>";
 		};
 		7BABF789353FFDC438FC208D /* Utilities */ = {
@@ -262,7 +214,7 @@
 			children = (
 				D9FA094EFAFCD5560BE156EC /* URLQueryBuilder.swift */,
 			);
-			path = "Utilities";
+			path = Utilities;
 			sourceTree = "<group>";
 		};
 		8997D838ABC0FD9BDCA6A8CD /* ViewModels */ = {
@@ -270,24 +222,39 @@
 			children = (
 				F7598DA3E42BAB57099C15A5 /* GalleryViewModel.swift */,
 			);
-			path = "ViewModels";
+			path = ViewModels;
 			sourceTree = "<group>";
 		};
-		2647A7D74309AF7D969B0A25 /* BooruBarTests */ = {
+		BDA3FD5A9EF6179AEF960C65 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				CAE83E3C35CD8941C08EF87B /* BooruBarTests.swift */,
+				BE9290B3F19F15763610F88D /* BooruFilterOption.swift */,
+				9485C85046F3B5FB2D11F456 /* BooruImage.swift */,
+				91A7EF04A45CB9D08435B029 /* BooruSite.swift */,
 			);
-			path = "BooruBarTests";
+			path = Models;
 			sourceTree = "<group>";
 		};
-		09F50773FECEDA553313A71E /* BooruBarUITests */ = {
+		C1A5196A2FE846F300635089 = {
 			isa = PBXGroup;
 			children = (
-				040253E7F3EA94587DDC8067 /* BooruBarUITests.swift */,
-				7523D82CC0EC00B2E8B1C69D /* BooruBarUITestsLaunchTests.swift */,
+				0ED7FA453F5F7B321D178716 /* BooruBar */,
+				FBFD6E4E7C2B01C029A7D463 /* iBooruBar */,
+				C1A519742FE846F300635089 /* Products */,
 			);
-			path = "BooruBarUITests";
+			sourceTree = "<group>";
+		};
+		C1A519742FE846F300635089 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C1A519732FE846F300635089 /* BooruBar.app */,
+				C1A519812FE846F700635089 /* BooruBarTests.xctest */,
+				C1A5198B2FE846F800635089 /* BooruBarUITests.xctest */,
+				C1C398FB3050A4120064F4A6 /* iBooruBar.app */,
+				C1C399073050A4170064F4A6 /* iBooruBarTests.xctest */,
+				C1C399113050A4170064F4A6 /* iBooruBarUITests.xctest */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		FBFD6E4E7C2B01C029A7D463 /* iBooruBar */ = {
@@ -305,24 +272,7 @@
 				2230C053EE678ABC2CF14F47 /* GelbooruCommentsClient.swift */,
 				71114E97761BCAB8142CD4D6 /* Assets.xcassets */,
 			);
-			path = "iBooruBar";
-			sourceTree = "<group>";
-		};
-		AB07DA7746B2262144C4EC82 /* iBooruBarTests */ = {
-			isa = PBXGroup;
-			children = (
-				4F8A55BAF2EABF312EF46AA1 /* iBooruBarTests.swift */,
-			);
-			path = "iBooruBarTests";
-			sourceTree = "<group>";
-		};
-		FC4159A724450D21781B8CF1 /* iBooruBarUITests */ = {
-			isa = PBXGroup;
-			children = (
-				C0A44560BBDD3A9AAE56080E /* iBooruBarUITests.swift */,
-				4B53B32C68DD3CCA96D8340B /* iBooruBarUITestsLaunchTests.swift */,
-			);
-			path = "iBooruBarUITests";
+			path = iBooruBar;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -480,7 +430,7 @@
 					};
 				};
 			};
-			buildConfigurationList = C1A5196E2FE846F300635089 /* Build configuration list for PBXProject "BooruBar" */;
+			buildConfigurationList = C1A5196E2FE846F300635089 /* Build configuration list for PBXProject "BooruBar-Xcode14" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -580,7 +530,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1985DD51147FCE325AEE194F /* BooruBarTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -588,8 +537,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3081C8F3464F614D24C90BF9 /* BooruBarUITests.swift in Sources */,
-				5CC19E3B6E33705836E20DA0 /* BooruBarUITestsLaunchTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -626,7 +573,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				55172CBAAE9BC6B836B5EBC8 /* iBooruBarTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -634,8 +580,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E0108402499821D1459A2FCF /* iBooruBarUITests.swift in Sources */,
-				DDF45F018793BCCE9CD83BC8 /* iBooruBarUITestsLaunchTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1073,7 +1017,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C1A5196E2FE846F300635089 /* Build configuration list for PBXProject "BooruBar" */ = {
+		C1A5196E2FE846F300635089 /* Build configuration list for PBXProject "BooruBar-Xcode14" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C1A519932FE846F800635089 /* Debug */,
