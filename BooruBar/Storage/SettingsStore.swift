@@ -256,7 +256,11 @@ final class SettingsStore: ObservableObject {
     private static func normalizedSites(_ sites: [BooruSite]) -> [BooruSite] {
         sites.map { site in
             var normalizedSite = site
-            if normalizedSite.id == e621SiteID || normalizedSite.baseURL.host?.lowercased().contains("e621.net") == true {
+            let host = normalizedSite.baseURL.host?.lowercased() ?? ""
+            if normalizedSite.id == e621SiteID
+                || normalizedSite.id == e926SiteID
+                || host.contains("e621.net")
+                || host.contains("e926.net") {
                 normalizedSite.apiType = .e621
             } else if normalizedSite.baseURL.host.map(Self.isGelbooruHost) == true {
                 normalizedSite.apiType = .gelbooru
@@ -270,6 +274,9 @@ final class SettingsStore: ObservableObject {
         return normalizedHost.contains("gelbooru")
             || normalizedHost.contains("safebooru")
             || normalizedHost.hasSuffix(".booru.org")
+            || normalizedHost == "tbib.org"
+            || normalizedHost == "mspabooru.com"
+            || normalizedHost == "xbooru.com"
     }
 
     private enum Keys {
@@ -283,9 +290,16 @@ final class SettingsStore: ObservableObject {
 
     static let defaultSites: [BooruSite] = [
         BooruSite(
-            id: UUID(uuidString: "C3DE6F79-33CA-4DAB-81B1-F35A255B346A")!,
-            name: "Derpibooru",
-            baseURL: URL(string: "https://derpibooru.org")!
+            id: e926SiteID,
+            name: "e926",
+            baseURL: URL(string: "https://e926.net")!,
+            apiType: .e621
+        ),
+        BooruSite(
+            id: e621SiteID,
+            name: "e621",
+            baseURL: URL(string: "https://e621.net")!,
+            apiType: .e621
         ),
         BooruSite(
             id: UUID(uuidString: "F673845A-DA5A-4AF4-BF3E-A535073F07A0")!,
@@ -293,13 +307,79 @@ final class SettingsStore: ObservableObject {
             baseURL: URL(string: "https://furbooru.org")!
         ),
         BooruSite(
-            id: e621SiteID,
-            name: "e621",
-            baseURL: URL(string: "https://e621.net")!,
-            apiType: .e621
+            id: UUID(uuidString: "C3DE6F79-33CA-4DAB-81B1-F35A255B346A")!,
+            name: "Derpibooru",
+            baseURL: URL(string: "https://derpibooru.org")!
+        ),
+        BooruSite(
+            id: UUID(uuidString: "B1B74833-E45C-5BDD-BB11-96676791D4D3")!,
+            name: "Safebooru",
+            baseURL: URL(string: "https://safebooru.org")!,
+            apiType: .gelbooru
+        ),
+        BooruSite(
+            id: UUID(uuidString: "52F288AA-E497-585A-A6EA-55C0DC4F83C8")!,
+            name: "The Azure Blade",
+            baseURL: URL(string: "https://tab.booru.org")!,
+            apiType: .gelbooru
+        ),
+        BooruSite(
+            id: UUID(uuidString: "8E7CED24-97C1-58EC-9988-00AF21825C85")!,
+            name: "All Girl",
+            baseURL: URL(string: "https://allgirl.booru.org")!,
+            apiType: .gelbooru
+        ),
+        BooruSite(
+            id: UUID(uuidString: "FCAFA0FD-9A84-59E4-98F2-AACF817CA253")!,
+            name: "The /co/llection",
+            baseURL: URL(string: "https://the-collection.booru.org")!,
+            apiType: .gelbooru
+        ),
+        BooruSite(
+            id: UUID(uuidString: "ADC55C90-6572-5C95-B32C-213244B87A8B")!,
+            name: "Illusion Game Cards",
+            baseURL: URL(string: "https://illusioncards.booru.org")!,
+            apiType: .gelbooru
+        ),
+        BooruSite(
+            id: UUID(uuidString: "EC69A933-EE51-5D65-9CED-6BFA44955950")!,
+            name: "Draw Friends",
+            baseURL: URL(string: "https://drawfriends.booru.org")!,
+            apiType: .gelbooru
+        ),
+        BooruSite(
+            id: UUID(uuidString: "F16ABB39-EE8A-51C6-BF18-C70F69952EDA")!,
+            name: "/v/idyart2",
+            baseURL: URL(string: "https://vidyart2.booru.org")!,
+            apiType: .gelbooru
+        ),
+        BooruSite(
+            id: UUID(uuidString: "9979DCA8-07EF-540D-9486-5149BF1F9C8A")!,
+            name: "BlueGunnerBooru",
+            baseURL: URL(string: "https://bgb.booru.org")!,
+            apiType: .gelbooru
+        ),
+        BooruSite(
+            id: UUID(uuidString: "5149987E-5840-5DA3-83E2-7A5307D42052")!,
+            name: "The Big ImageBoard",
+            baseURL: URL(string: "https://tbib.org")!,
+            apiType: .gelbooru
+        ),
+        BooruSite(
+            id: UUID(uuidString: "48957D78-C321-503E-A985-0F6D71A8EC3D")!,
+            name: "MSPA Booru",
+            baseURL: URL(string: "https://mspabooru.com")!,
+            apiType: .gelbooru
+        ),
+        BooruSite(
+            id: UUID(uuidString: "6BE1D6C6-0056-53C1-8B84-A3254FE7486C")!,
+            name: "Xbooru",
+            baseURL: URL(string: "https://xbooru.com")!,
+            apiType: .gelbooru
         )
     ]
 
+    private static let e926SiteID = UUID(uuidString: "BCC9B0BF-AF92-56D3-9A9D-87C5C4527CB0")!
     private static let e621SiteID = UUID(uuidString: "496BD647-93B0-4D2B-B4A1-3EFDBD1816B3")!
     private static let defaultSiteIDs = Set(defaultSites.map(\.id))
 }
