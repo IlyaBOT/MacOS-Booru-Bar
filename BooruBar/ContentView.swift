@@ -15,6 +15,8 @@ struct ContentView: View {
     @State private var isShowingSettings = false
     @State private var isShowingSources = false
     @State private var isShowingFilters = false
+    @State private var filterOptions: [BooruFilterOption] = []
+    @State private var isLoadingFilters = false
 
     init(settingsStore: SettingsStore) {
         self.settingsStore = settingsStore
@@ -35,15 +37,18 @@ struct ContentView: View {
         .background(Color(nsColor: .windowBackgroundColor))
         .task {
             await viewModel.loadInitialIfNeeded()
+            await reloadFilterOptions()
         }
         .onChange(of: settingsStore.sites) { _ in
             Task {
                 await viewModel.handleSitesChanged()
+                await reloadFilterOptions()
             }
         }
         .onChange(of: settingsStore.selectedSiteID) { siteID in
             Task {
                 await viewModel.selectSite(siteID)
+                await reloadFilterOptions()
             }
         }
         .onChange(of: settingsStore.nsfwEnabled) { _ in
@@ -66,7 +71,7 @@ struct ContentView: View {
                 sourceList
             }
 
-            if !availableFilters.isEmpty {
+            if !filterOptions.isEmpty || isLoadingFilters {
                 filterControl
             }
 
@@ -85,7 +90,12 @@ struct ContentView: View {
                 SearchView(viewModel: viewModel)
             }
 
-            GalleryView(viewModel: viewModel, playAnimatedMedia: settingsStore.playAnimatedMedia)
+            GalleryView(
+                viewModel: viewModel,
+                playAnimatedMedia: settingsStore.playAnimatedMedia,
+                site: selectedSite,
+                settingsStore: settingsStore
+            )
         }
         .padding(14)
     }
@@ -174,6 +184,12 @@ struct ContentView: View {
                             .font(.caption)
                             .foregroundStyle(.secondary)
 
+                        if settingsStore.hasUsableAuthentication(for: site) {
+                            Image(systemName: "key.fill")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+
                         if viewModel.selectedSiteID == site.id {
                             Image(systemName: "checkmark")
                                 .foregroundStyle(.tint)
@@ -201,12 +217,21 @@ struct ContentView: View {
                 .foregroundStyle(.secondary)
 
             Button {
+                guard !isLoadingFilters else { return }
                 isShowingFilters.toggle()
                 isShowingSources = false
             } label: {
                 HStack(spacing: 6) {
-                    Text(currentFilterName)
-                        .lineLimit(1)
+                    if isLoadingFilters {
+                        ProgressView()
+                            .controlSize(.small)
+                        Text("Loading filters…")
+                    } else {
+                        Text(currentFilterName)
+                            .lineLimit(1)
+                    }
+
+                    Spacer()
 
                     Image(systemName: isShowingFilters ? "chevron.up" : "chevron.down")
                         .font(.caption.weight(.semibold))
@@ -214,12 +239,13 @@ struct ContentView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
             .buttonStyle(.bordered)
+            .disabled(isLoadingFilters)
         }
     }
 
     private var filterList: some View {
         VStack(spacing: 4) {
-            ForEach(availableFilters) { filter in
+            ForEach(filterOptions) { filter in
                 Button {
                     guard let selectedSite else {
                         return
@@ -234,7 +260,7 @@ struct ContentView: View {
 
                         Spacer()
 
-                        if selectedSite.map({ settingsStore.selectedFilterID(for: $0) == filter.id }) == true {
+                        if isSelected(filter) {
                             Image(systemName: "checkmark")
                                 .foregroundStyle(.tint)
                         }
@@ -244,6 +270,7 @@ struct ContentView: View {
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
+                .disabled(filter.requiresNSFW && !settingsStore.nsfwEnabled)
             }
         }
         .padding(6)
@@ -263,16 +290,56 @@ struct ContentView: View {
         settingsStore.sites.first { $0.id == viewModel.selectedSiteID }
     }
 
-    private var availableFilters: [BooruFilterOption] {
-        BooruFilterOption.options(for: selectedSite)
-    }
-
     private var currentFilterName: String {
         guard let selectedSite else {
             return "Site default"
         }
 
-        return settingsStore.selectedFilterName(for: selectedSite)
+        let selectedID = settingsStore.selectedFilterID(for: selectedSite)
+        if selectedID == nil,
+           let all = filterOptions.first(where: { $0.id == BooruFilterOption.allRatingsID }) {
+            return all.name
+        }
+
+        return filterOptions.first(where: { $0.id == selectedID })?.name
+            ?? settingsStore.selectedFilterName(for: selectedSite)
+    }
+
+    private func isSelected(_ filter: BooruFilterOption) -> Bool {
+        guard let selectedSite else { return false }
+        let selectedID = settingsStore.selectedFilterID(for: selectedSite)
+
+        if filter.id == BooruFilterOption.allRatingsID {
+            return selectedID == nil || selectedID == BooruFilterOption.allRatingsID
+        }
+        return selectedID == filter.id
+    }
+
+    @MainActor
+    private func reloadFilterOptions() async {
+        guard let selectedSite else {
+            filterOptions = []
+            return
+        }
+
+        let fallback = BooruFilterOption.mobileFallbackOptions(for: selectedSite)
+
+        guard selectedSite.resolvedProtocol == .philomena else {
+            filterOptions = fallback
+            return
+        }
+
+        isLoadingFilters = true
+        defer { isLoadingFilters = false }
+
+        do {
+            filterOptions = try await BooruFilterOption.fetchMobileOptions(
+                for: selectedSite,
+                apiKey: settingsStore.apiKey(for: selectedSite)
+            )
+        } catch {
+            filterOptions = fallback
+        }
     }
 
     private var tabBinding: Binding<GalleryTab> {
