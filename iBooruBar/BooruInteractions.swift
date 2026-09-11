@@ -64,7 +64,7 @@ struct BooruInteractionAPI {
     }
 
     var capabilities: BooruInteractionCapabilities {
-        switch site.apiType {
+        switch site.resolvedProtocol {
         case .e621:
             return .init(
                 canReadComments: true,
@@ -72,6 +72,7 @@ struct BooruInteractionAPI {
                 canVotePosts: hasE621APIAuthentication,
                 canVoteComments: hasE621APIAuthentication
             )
+
         case .philomena:
             // Philomena exposes comments and per-image interaction metadata via
             // its JSON API. Vote/comment writes live behind browser-session
@@ -83,6 +84,7 @@ struct BooruInteractionAPI {
                 canVotePosts: false,
                 canVoteComments: false
             )
+
         case .gelbooru:
             // Gelbooru/Safebooru document comment listing through DAPI, but do
             // not document stable write endpoints for comments or votes.
@@ -92,22 +94,39 @@ struct BooruInteractionAPI {
                 canVotePosts: false,
                 canVoteComments: false
             )
+
+        case .moebooru, .danbooru, .shimmie:
+            // Feed parsing is supported for these protocols, but the interaction
+            // layer does not yet implement their site-specific comment/vote APIs.
+            // Keep them disabled instead of falling through the legacy `.gelbooru`
+            // storage value used for backwards compatibility.
+            return .init(
+                canReadComments: false,
+                canCreateComments: false,
+                canVotePosts: false,
+                canVoteComments: false
+            )
         }
     }
 
     func fetchPostState(imageID: Int) async throws -> BooruPostInteractionState {
-        switch site.apiType {
+        switch site.resolvedProtocol {
         case .philomena:
             return try await fetchPhilomenaPostState(imageID: imageID)
         case .e621:
             return try await fetchE621PostState(imageID: imageID)
-        case .gelbooru:
-            return BooruPostInteractionState(upvotes: nil, downvotes: nil, commentCount: nil, userVote: .none)
+        case .gelbooru, .moebooru, .danbooru, .shimmie:
+            return BooruPostInteractionState(
+                upvotes: nil,
+                downvotes: nil,
+                commentCount: nil,
+                userVote: .none
+            )
         }
     }
 
     func setPostVote(imageID: Int, vote: BooruVoteState) async throws -> BooruPostInteractionState {
-        guard site.apiType == .e621 else {
+        guard site.resolvedProtocol == .e621 else {
             throw BooruInteractionError.unsupported("Voting is not available through this site's public API.")
         }
         guard let authorizationHeader = e621AuthorizationHeader else {
@@ -145,18 +164,22 @@ struct BooruInteractionAPI {
     }
 
     func fetchComments(imageID: Int) async throws -> [BooruComment] {
-        switch site.apiType {
+        switch site.resolvedProtocol {
         case .philomena:
             return try await fetchPhilomenaComments(imageID: imageID)
         case .e621:
             return try await fetchE621Comments(imageID: imageID)
         case .gelbooru:
             return try await fetchGelbooruComments(imageID: imageID)
+        case .moebooru, .danbooru, .shimmie:
+            throw BooruInteractionError.unsupported(
+                "Comments are not implemented for this booru protocol yet."
+            )
         }
     }
 
     func createComment(imageID: Int, body: String) async throws -> BooruComment {
-        guard site.apiType == .e621 else {
+        guard site.resolvedProtocol == .e621 else {
             throw BooruInteractionError.unsupported("Posting comments is not available through this site's public API.")
         }
         guard let authorizationHeader = e621AuthorizationHeader else {
@@ -182,7 +205,7 @@ struct BooruInteractionAPI {
     }
 
     func setCommentVote(commentID: Int, vote: BooruVoteState) async throws -> (score: Int?, userVote: BooruVoteState) {
-        guard site.apiType == .e621 else {
+        guard site.resolvedProtocol == .e621 else {
             throw BooruInteractionError.unsupported("Comment voting is not available through this site's public API.")
         }
         guard let authorizationHeader = e621AuthorizationHeader else {
@@ -421,7 +444,8 @@ struct BooruInteractionAPI {
         let (data, response) = try await session.data(for: request)
         guard let http = response as? HTTPURLResponse else { throw BooruInteractionError.invalidResponse }
         guard acceptedStatus.contains(http.statusCode) else {
-            if let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+            if let rawObject = try? JSONSerialization.jsonObject(with: data),
+               let object = rawObject as? [String: Any],
                let message = (object["message"] as? String) ?? (object["error"] as? String) {
                 throw BooruInteractionError.serverMessage(message)
             }
