@@ -33,13 +33,8 @@ final class GalleryViewModel: ObservableObject {
 
     private let settingsStore: SettingsStore
     private let perPage = 24
-    private let maxVisibleImages = 30
-    private let visibleWindowShiftInterval: TimeInterval = 0.05
     private var resultCache: [GalleryCacheKey: [BooruImage]] = [:]
     private var activeRequestID: UUID?
-    private var loadedImages: [BooruImage] = []
-    private var visibleStartIndex = 0
-    private var lastVisibleWindowShiftDate = Date.distantPast
 
     init(settingsStore: SettingsStore) {
         self.settingsStore = settingsStore
@@ -104,31 +99,12 @@ final class GalleryViewModel: ObservableObject {
     func loadNextPageIfNeeded(currentItem: BooruImage?) async {
         guard let currentItem,
               !isLoading,
+              hasMorePages,
               shouldLoadMore(after: currentItem) else {
             return
         }
 
-        if revealNextImageIfPossible() {
-            return
-        }
-
-        guard hasMorePages else {
-            return
-        }
-
         await loadPage(reset: false)
-    }
-
-    func revealPreviousImageIfNeeded(currentItem: BooruImage?) {
-        guard let currentItem,
-              shouldRevealPrevious(before: currentItem),
-              canShiftVisibleWindow else {
-            return
-        }
-
-        visibleStartIndex = max(visibleStartIndex - 1, 0)
-        markVisibleWindowShift()
-        publishVisibleWindow()
     }
 
     func handleSitesChanged() async {
@@ -165,9 +141,6 @@ final class GalleryViewModel: ObservableObject {
         if reset {
             currentPage = 0
             hasMorePages = true
-            loadedImages = []
-            visibleStartIndex = 0
-            lastVisibleWindowShiftDate = .distantPast
             images = []
             errorMessage = nil
         }
@@ -307,22 +280,13 @@ final class GalleryViewModel: ObservableObject {
 
     private func apply(_ fetchedImages: [BooruImage], page: Int, reset: Bool) {
         if reset {
-            loadedImages = fetchedImages
-            visibleStartIndex = 0
+            images = fetchedImages
         } else {
-            let wasAtCapacity = images.count >= maxVisibleImages
-            let existingIDs = Set(loadedImages.map(\.id))
+            let existingIDs = Set(images.map(\.id))
             let uniqueImages = fetchedImages.filter { !existingIDs.contains($0.id) }
-
-            loadedImages.append(contentsOf: uniqueImages)
-
-            if wasAtCapacity && !uniqueImages.isEmpty {
-                visibleStartIndex = min(visibleStartIndex + 1, maxVisibleStartIndex)
-                markVisibleWindowShift()
-            }
+            images.append(contentsOf: uniqueImages)
         }
 
-        publishVisibleWindow()
         currentPage = page
         hasMorePages = fetchedImages.count >= perPage
     }
@@ -332,67 +296,17 @@ final class GalleryViewModel: ObservableObject {
             return false
         }
 
-        let thresholdIndex = images.index(images.endIndex, offsetBy: -5, limitedBy: images.startIndex) ?? images.startIndex
+        let thresholdIndex = images.index(
+            images.endIndex,
+            offsetBy: -5,
+            limitedBy: images.startIndex
+        ) ?? images.startIndex
         return index >= thresholdIndex
-    }
-
-    private func shouldRevealPrevious(before item: BooruImage) -> Bool {
-        guard visibleStartIndex > 0,
-              let index = images.firstIndex(where: { $0.id == item.id }) else {
-            return false
-        }
-
-        return index <= 2
-    }
-
-    private func revealNextImageIfPossible() -> Bool {
-        guard visibleEndIndex < loadedImages.count else {
-            return false
-        }
-
-        guard canShiftVisibleWindow else {
-            return true
-        }
-
-        visibleStartIndex = min(visibleStartIndex + 1, maxVisibleStartIndex)
-        markVisibleWindowShift()
-        publishVisibleWindow()
-        return true
-    }
-
-    private func publishVisibleWindow() {
-        guard !loadedImages.isEmpty else {
-            images = []
-            return
-        }
-
-        visibleStartIndex = min(max(visibleStartIndex, 0), maxVisibleStartIndex)
-        let endIndex = min(visibleStartIndex + maxVisibleImages, loadedImages.count)
-        images = Array(loadedImages[visibleStartIndex..<endIndex])
-    }
-
-    private var visibleEndIndex: Int {
-        min(visibleStartIndex + images.count, loadedImages.count)
-    }
-
-    private var maxVisibleStartIndex: Int {
-        max(loadedImages.count - maxVisibleImages, 0)
-    }
-
-    private var canShiftVisibleWindow: Bool {
-        Date().timeIntervalSince(lastVisibleWindowShiftDate) >= visibleWindowShiftInterval
-    }
-
-    private func markVisibleWindowShift() {
-        lastVisibleWindowShiftDate = Date()
     }
 
     private func resetForEmptySearch() {
         currentPage = 0
         hasMorePages = false
-        loadedImages = []
-        visibleStartIndex = 0
-        lastVisibleWindowShiftDate = .distantPast
         images = []
         errorMessage = nil
     }
