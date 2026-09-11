@@ -368,7 +368,7 @@ struct DanbooruClient: BooruClient {
             tags: splitTerms(post.tagString ?? ""),
             rating: post.rating,
             upvotes: post.upScore,
-            downvotes: post.downScore,
+            downvotes: post.downScore.map { abs($0) },
             commentCount: nil,
             userVote: nil
         )
@@ -463,11 +463,13 @@ struct ShimmieClient: BooruClient {
     }
 
     func fetchTrending(page: Int, perPage: Int, nsfwEnabled: Bool) async throws -> [BooruImage] {
-        // `order:score` only exists when a Shimmie installation enables the
-        // optional Numeric Score extension. The Danbooru Client API itself does
-        // not guarantee that extension, so keep this feed compatible with stock
-        // Shimmie and use the API's native newest-first ordering.
-        try await fetchPosts(tags: "", page: page, perPage: perPage)
+        // Numeric-score sorting is an optional Shimmie extension, not part of
+        // the Danbooru Client API itself. Paheal currently exposes that
+        // extension; unknown Shimmie installations stay on the guaranteed
+        // newest-first API order instead of accidentally searching for a tag
+        // named `order:score_desc`.
+        let tags = supportsNumericScoreSort ? "order:score_desc" : ""
+        return try await fetchPosts(tags: tags, page: page, perPage: perPage)
     }
 
     func fetchNewest(page: Int, perPage: Int, nsfwEnabled: Bool) async throws -> [BooruImage] {
@@ -480,6 +482,11 @@ struct ShimmieClient: BooruClient {
             page: page,
             perPage: perPage
         )
+    }
+
+    private var supportsNumericScoreSort: Bool {
+        guard let host = site.baseURL.host?.lowercased() else { return false }
+        return host == "rule34.paheal.net" || host.hasSuffix(".paheal.net")
     }
 
     private func fetchPosts(tags: String, page: Int, perPage: Int) async throws -> [BooruImage] {
