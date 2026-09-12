@@ -15,6 +15,13 @@ struct ContentView: View {
     @State private var isShowingSettings = false
     @State private var isShowingSources = false
     @State private var isShowingFilters = false
+    @State private var filterOptions: [BooruFilterOption] = []
+    @State private var isLoadingFilters = false
+    @State private var commentsRoute: MacCommentsRoute?
+
+    private let sourceVisibleRowLimit = 6
+    private let sourceRowHeight: CGFloat = 30
+    private let sourceRowSpacing: CGFloat = 4
 
     init(settingsStore: SettingsStore) {
         self.settingsStore = settingsStore
@@ -22,28 +29,48 @@ struct ContentView: View {
     }
 
     var body: some View {
-        Group {
-            if isShowingSettings {
-                SettingsView(settingsStore: settingsStore) {
-                    isShowingSettings = false
+        ZStack {
+            Group {
+                if isShowingSettings {
+                    SettingsView(settingsStore: settingsStore) {
+                        isShowingSettings = false
+                    }
+                } else {
+                    mainContent
                 }
-            } else {
-                mainContent
+            }
+
+            if let commentsRoute = commentsRoute {
+                MacCommentsView(
+                    image: commentsRoute.image,
+                    site: commentsRoute.site,
+                    settingsStore: settingsStore,
+                    onDismiss: {
+                        self.commentsRoute = nil
+                    }
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color(nsColor: .windowBackgroundColor))
+                .transition(.opacity)
+                .zIndex(10)
             }
         }
         .frame(width: 460, height: 720)
         .background(Color(nsColor: .windowBackgroundColor))
         .task {
             await viewModel.loadInitialIfNeeded()
+            await reloadFilterOptions()
         }
         .onChange(of: settingsStore.sites) { _ in
             Task {
                 await viewModel.handleSitesChanged()
+                await reloadFilterOptions()
             }
         }
         .onChange(of: settingsStore.selectedSiteID) { siteID in
             Task {
                 await viewModel.selectSite(siteID)
+                await reloadFilterOptions()
             }
         }
         .onChange(of: settingsStore.nsfwEnabled) { _ in
@@ -66,7 +93,7 @@ struct ContentView: View {
                 sourceList
             }
 
-            if !availableFilters.isEmpty {
+            if !filterOptions.isEmpty || isLoadingFilters {
                 filterControl
             }
 
@@ -85,7 +112,24 @@ struct ContentView: View {
                 SearchView(viewModel: viewModel)
             }
 
-            GalleryView(viewModel: viewModel, playAnimatedMedia: settingsStore.playAnimatedMedia)
+            GalleryView(
+                viewModel: viewModel,
+                playAnimatedMedia: settingsStore.playAnimatedMedia,
+                site: selectedSite,
+                settingsStore: settingsStore,
+                onOpenComments: { image in
+                    guard let selectedSite = selectedSite else {
+                        return
+                    }
+
+                    isShowingSources = false
+                    isShowingFilters = false
+                    commentsRoute = MacCommentsRoute(
+                        image: image,
+                        site: selectedSite
+                    )
+                }
+            )
         }
         .padding(14)
     }
@@ -156,34 +200,56 @@ struct ContentView: View {
     }
 
     private var sourceList: some View {
-        VStack(spacing: 4) {
-            ForEach(settingsStore.sites) { site in
-                Button {
-                    isShowingSources = false
-                    Task {
-                        await viewModel.selectSite(site.id)
-                    }
-                } label: {
-                    HStack(spacing: 8) {
-                        Text(site.name)
-                            .lineLimit(1)
+        ScrollViewReader { proxy in
+            ScrollView(
+                .vertical,
+                showsIndicators: settingsStore.sites.count > sourceVisibleRowLimit
+            ) {
+                LazyVStack(spacing: sourceRowSpacing) {
+                    ForEach(settingsStore.sites) { site in
+                        Button {
+                            isShowingSources = false
+                            Task {
+                                await viewModel.selectSite(site.id)
+                            }
+                        } label: {
+                            HStack(spacing: 8) {
+                                Text(site.name)
+                                    .lineLimit(1)
 
-                        Spacer()
+                                Spacer()
 
-                        Text(site.resolvedProtocol.displayName)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                                Text(site.resolvedProtocol.displayName)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
 
-                        if viewModel.selectedSiteID == site.id {
-                            Image(systemName: "checkmark")
-                                .foregroundStyle(.tint)
+                                if settingsStore.hasUsableAuthentication(for: site) {
+                                    Image(systemName: "key.fill")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+
+                                if viewModel.selectedSiteID == site.id {
+                                    Image(systemName: "checkmark")
+                                        .foregroundStyle(.tint)
+                                }
+                            }
+                            .frame(height: sourceRowHeight)
+                            .padding(.horizontal, 10)
+                            .contentShape(Rectangle())
                         }
+                        .buttonStyle(.plain)
+                        .id(site.id)
                     }
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 6)
-                    .contentShape(Rectangle())
                 }
-                .buttonStyle(.plain)
+            }
+            .frame(height: sourceListHeight)
+            .onAppear {
+                if settingsStore.sites.count > sourceVisibleRowLimit {
+                    DispatchQueue.main.async {
+                        proxy.scrollTo(viewModel.selectedSiteID, anchor: .center)
+                    }
+                }
             }
         }
         .padding(6)
@@ -195,18 +261,36 @@ struct ContentView: View {
         }
     }
 
+    private var sourceListHeight: CGFloat {
+        let visibleRows = min(settingsStore.sites.count, sourceVisibleRowLimit)
+        guard visibleRows > 0 else { return 0 }
+
+        let rowsHeight = CGFloat(visibleRows) * sourceRowHeight
+        let spacingHeight = CGFloat(max(visibleRows - 1, 0)) * sourceRowSpacing
+        return rowsHeight + spacingHeight
+    }
+
     private var filterControl: some View {
         HStack(spacing: 8) {
             Label("Filter", systemImage: "line.3.horizontal.decrease.circle")
                 .foregroundStyle(.secondary)
 
             Button {
+                guard !isLoadingFilters else { return }
                 isShowingFilters.toggle()
                 isShowingSources = false
             } label: {
                 HStack(spacing: 6) {
-                    Text(currentFilterName)
-                        .lineLimit(1)
+                    if isLoadingFilters {
+                        ProgressView()
+                            .controlSize(.small)
+                        Text("Loading filters…")
+                    } else {
+                        Text(currentFilterName)
+                            .lineLimit(1)
+                    }
+
+                    Spacer()
 
                     Image(systemName: isShowingFilters ? "chevron.up" : "chevron.down")
                         .font(.caption.weight(.semibold))
@@ -214,14 +298,15 @@ struct ContentView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
             .buttonStyle(.bordered)
+            .disabled(isLoadingFilters)
         }
     }
 
     private var filterList: some View {
         VStack(spacing: 4) {
-            ForEach(availableFilters) { filter in
+            ForEach(filterOptions) { filter in
                 Button {
-                    guard let selectedSite else {
+                    guard let selectedSite = selectedSite else {
                         return
                     }
 
@@ -234,7 +319,7 @@ struct ContentView: View {
 
                         Spacer()
 
-                        if selectedSite.map({ settingsStore.selectedFilterID(for: $0) == filter.id }) == true {
+                        if isSelected(filter) {
                             Image(systemName: "checkmark")
                                 .foregroundStyle(.tint)
                         }
@@ -244,6 +329,7 @@ struct ContentView: View {
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
+                .disabled(filter.requiresNSFW && !settingsStore.nsfwEnabled)
             }
         }
         .padding(6)
@@ -263,16 +349,56 @@ struct ContentView: View {
         settingsStore.sites.first { $0.id == viewModel.selectedSiteID }
     }
 
-    private var availableFilters: [BooruFilterOption] {
-        BooruFilterOption.options(for: selectedSite)
-    }
-
     private var currentFilterName: String {
-        guard let selectedSite else {
+        guard let selectedSite = selectedSite else {
             return "Site default"
         }
 
-        return settingsStore.selectedFilterName(for: selectedSite)
+        let selectedID = settingsStore.selectedFilterID(for: selectedSite)
+        if selectedID == nil,
+           let all = filterOptions.first(where: { $0.id == BooruFilterOption.allRatingsID }) {
+            return all.name
+        }
+
+        return filterOptions.first(where: { $0.id == selectedID })?.name
+            ?? settingsStore.selectedFilterName(for: selectedSite)
+    }
+
+    private func isSelected(_ filter: BooruFilterOption) -> Bool {
+        guard let selectedSite = selectedSite else { return false }
+        let selectedID = settingsStore.selectedFilterID(for: selectedSite)
+
+        if filter.id == BooruFilterOption.allRatingsID {
+            return selectedID == nil || selectedID == BooruFilterOption.allRatingsID
+        }
+        return selectedID == filter.id
+    }
+
+    @MainActor
+    private func reloadFilterOptions() async {
+        guard let selectedSite = selectedSite else {
+            filterOptions = []
+            return
+        }
+
+        let fallback = BooruFilterOption.mobileFallbackOptions(for: selectedSite)
+
+        guard selectedSite.resolvedProtocol == .philomena else {
+            filterOptions = fallback
+            return
+        }
+
+        isLoadingFilters = true
+        defer { isLoadingFilters = false }
+
+        do {
+            filterOptions = try await BooruFilterOption.fetchMobileOptions(
+                for: selectedSite,
+                apiKey: settingsStore.apiKey(for: selectedSite)
+            )
+        } catch {
+            filterOptions = fallback
+        }
     }
 
     private var tabBinding: Binding<GalleryTab> {
@@ -287,6 +413,12 @@ struct ContentView: View {
             }
         )
     }
+}
+
+@available(macOS 12.0, *)
+private struct MacCommentsRoute {
+    let image: BooruImage
+    let site: BooruSite
 }
 
 struct ContentView_Previews: PreviewProvider {

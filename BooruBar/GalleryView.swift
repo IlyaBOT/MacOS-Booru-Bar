@@ -4,8 +4,9 @@ import SwiftUI
 struct GalleryView: View {
     @ObservedObject var viewModel: GalleryViewModel
     let playAnimatedMedia: Bool
-    @State private var lastScrollOffset: CGFloat?
-    @State private var scrollDirection: GalleryScrollDirection = .idle
+    let site: BooruSite?
+    @ObservedObject var settingsStore: SettingsStore
+    let onOpenComments: (BooruImage) -> Void
 
     var body: some View {
         Group {
@@ -23,17 +24,23 @@ struct GalleryView: View {
     private var gallery: some View {
         ScrollView {
             LazyVStack(spacing: 12) {
-                scrollOffsetProbe
-
                 if let errorMessage = viewModel.errorMessage {
                     GalleryMessageView(systemImage: "exclamationmark.triangle", message: errorMessage)
                 }
 
                 ForEach(viewModel.images) { image in
-                    GalleryCardView(image: image, playAnimatedMedia: playAnimatedMedia)
-                        .onAppear {
-                            handleAppearance(of: image)
+                    GalleryCardView(
+                        image: image,
+                        playAnimatedMedia: playAnimatedMedia,
+                        site: site,
+                        settingsStore: settingsStore,
+                        onOpenComments: onOpenComments
+                    )
+                    .onAppear {
+                        Task {
+                            await viewModel.loadNextPageIfNeeded(currentItem: image)
                         }
+                    }
                 }
 
                 if viewModel.isLoading {
@@ -43,52 +50,6 @@ struct GalleryView: View {
             }
             .padding(.vertical, 2)
         }
-        .coordinateSpace(name: "galleryScroll")
-        .onPreferenceChange(GalleryScrollOffsetPreferenceKey.self) { offset in
-            updateScrollDirection(offset)
-        }
-    }
-
-    private var scrollOffsetProbe: some View {
-        GeometryReader { proxy in
-            Color.clear.preference(
-                key: GalleryScrollOffsetPreferenceKey.self,
-                value: proxy.frame(in: .named("galleryScroll")).minY
-            )
-        }
-        .frame(height: 0)
-    }
-
-    private func handleAppearance(of image: BooruImage) {
-        if image.id == viewModel.images.first?.id, scrollDirection == .up {
-            viewModel.revealPreviousImageIfNeeded(currentItem: image)
-            return
-        }
-
-        guard scrollDirection != .up else {
-            return
-        }
-
-        Task {
-            await viewModel.loadNextPageIfNeeded(currentItem: image)
-        }
-    }
-
-    private func updateScrollDirection(_ offset: CGFloat) {
-        defer {
-            lastScrollOffset = offset
-        }
-
-        guard let lastScrollOffset else {
-            return
-        }
-
-        let delta = offset - lastScrollOffset
-        guard abs(delta) > 1 else {
-            return
-        }
-
-        scrollDirection = delta > 0 ? .up : .down
     }
 
     @ViewBuilder
@@ -100,20 +61,6 @@ struct GalleryView: View {
         } else {
             GalleryMessageView(systemImage: "photo.stack", message: "No images to show.")
         }
-    }
-}
-
-private enum GalleryScrollDirection {
-    case idle
-    case up
-    case down
-}
-
-private struct GalleryScrollOffsetPreferenceKey: PreferenceKey {
-    static var defaultValue: CGFloat = 0
-
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-        value = nextValue()
     }
 }
 

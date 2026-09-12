@@ -7,38 +7,42 @@ struct SettingsView: View {
 
     @State private var draftSites: [BooruSite] = []
     @State private var draftAPIKeys: [UUID: String] = [:]
+    @State private var draftUsernames: [UUID: String] = [:]
+    @State private var draftPasswords: [UUID: String] = [:]
+    @State private var draftUserIDs: [UUID: String] = [:]
+    @State private var draftAuthenticationModes: [UUID: BooruAuthenticationMode] = [:]
+
     @State private var selectedSiteID: UUID?
     @State private var editingSiteID: UUID?
     @State private var isAddingSite = false
+
     @State private var name = ""
     @State private var baseURLString = ""
-    @State private var apiKey = ""
     @State private var apiType: BooruProtocol = .philomena
+    @State private var authenticationMode: BooruAuthenticationMode = .none
+    @State private var username = ""
+    @State private var password = ""
+    @State private var userID = ""
+    @State private var apiKey = ""
+
     @State private var errorMessage: String?
     @State private var didLoadDrafts = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            HStack {
-                Text("Settings")
-                    .font(.title2.bold())
+            header
 
-                Spacer()
-
-                Button("Apply") {
-                    applyAndClose()
-                }
-                .keyboardShortcut(.defaultAction)
+            VStack(alignment: .leading, spacing: 8) {
+                Toggle("Allow NSFW content", isOn: nsfwBinding)
+                Toggle("Play animations and videos", isOn: playAnimatedMediaBinding)
             }
-
-            Toggle("Allow NSFW content", isOn: nsfwBinding)
-            Toggle("Play animations and videos", isOn: playAnimatedMediaBinding)
 
             Divider()
 
-            HStack(spacing: 16) {
+            HStack(alignment: .top, spacing: 12) {
                 siteList
                 editorPanel
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             }
         }
         .padding(18)
@@ -47,7 +51,7 @@ struct SettingsView: View {
             loadDraftsIfNeeded()
         }
         .onChange(of: selectedSiteID) { newValue in
-            guard let newValue, !isAddingSite else {
+            guard let newValue = newValue, !isAddingSite else {
                 return
             }
 
@@ -58,6 +62,20 @@ struct SettingsView: View {
             if let detectedAPIType = detectedAPIType(for: newValue) {
                 apiType = detectedAPIType
             }
+        }
+    }
+
+    private var header: some View {
+        HStack {
+            Text("Settings")
+                .font(.title2.bold())
+
+            Spacer()
+
+            Button("Apply") {
+                applyAndClose()
+            }
+            .keyboardShortcut(.defaultAction)
         }
     }
 
@@ -87,18 +105,21 @@ struct SettingsView: View {
 
             List(selection: $selectedSiteID) {
                 ForEach(draftSites) { site in
-                    HStack {
+                    HStack(spacing: 5) {
                         Text(site.name)
                             .lineLimit(1)
+                            .truncationMode(.tail)
 
-                        Spacer()
+                        Spacer(minLength: 4)
 
                         Text(site.resolvedProtocol.displayName)
-                            .font(.caption)
+                            .font(.caption2)
                             .foregroundStyle(.secondary)
+                            .lineLimit(1)
 
-                        if draftAPIKeys[site.id]?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false {
-                            Image(systemName: "key")
+                        if (draftAuthenticationModes[site.id] ?? .none) != .none {
+                            Image(systemName: authenticationIcon(for: site.id))
+                                .font(.caption2)
                                 .foregroundStyle(.secondary)
                         }
                     }
@@ -106,80 +127,207 @@ struct SettingsView: View {
                 }
             }
         }
-        .frame(width: 210)
+        .frame(width: 180)
     }
 
     @ViewBuilder
     private var editorPanel: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            if isAddingSite {
-                editorFields(title: "Add Site", showsAddActions: true)
-            } else if editingSiteID != nil {
-                editorFields(title: "Edit Site")
-            } else {
-                VStack(spacing: 10) {
-                    Image(systemName: "globe")
-                        .font(.system(size: 30, weight: .semibold))
-                        .foregroundStyle(.secondary)
-
-                    Text("Select a booru site or add a new one.")
-                        .font(.callout)
-                        .multilineTextAlignment(.center)
-                        .foregroundStyle(.secondary)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            }
+        if isAddingSite {
+            editorFields(title: "Add Site", showsAddActions: true)
+        } else if editingSiteID != nil {
+            editorFields(title: "Edit Site")
+        } else {
+            emptyEditorState
         }
     }
 
-    private func editorFields(title: String, showsAddActions: Bool = false) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(title)
-                .font(.headline)
+    private var emptyEditorState: some View {
+        VStack(spacing: 10) {
+            Spacer()
 
+            Image(systemName: "globe")
+                .font(.system(size: 30, weight: .semibold))
+                .foregroundStyle(.secondary)
+
+            Text("Select a booru site or add a new one.")
+                .font(.callout)
+                .multilineTextAlignment(.center)
+                .foregroundStyle(.secondary)
+
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private func editorFields(title: String, showsAddActions: Bool = false) -> some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 12) {
+                Text(title)
+                    .font(.headline)
+
+                sourceFields
+
+                Divider()
+
+                authorizationSection
+
+                if showsAddActions {
+                    addActions
+                }
+
+                if let errorMessage = errorMessage {
+                    Text(errorMessage)
+                        .font(.callout)
+                        .foregroundStyle(.red)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.trailing, 2)
+        }
+    }
+
+    private var sourceFields: some View {
+        VStack(alignment: .leading, spacing: 8) {
             TextField("Display name", text: $name)
+                .textFieldStyle(.roundedBorder)
 
             TextField("Base URL", text: $baseURLString)
+                .textFieldStyle(.roundedBorder)
 
             HStack(spacing: 8) {
                 Text("API:")
                     .foregroundStyle(.secondary)
 
                 Picker("API", selection: $apiType) {
-                    ForEach(BooruProtocol.allCases) { apiType in
-                        Text(apiType.displayName).tag(apiType)
+                    ForEach(BooruProtocol.allCases) { type in
+                        Text(type.displayName).tag(type)
                     }
                 }
                 .pickerStyle(.menu)
                 .labelsHidden()
-
-                Spacer()
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
 
-            SecureField(apiKeyPlaceholder, text: $apiKey)
+    private var authorizationSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Authorization")
+                .font(.headline)
 
-            if showsAddActions {
-                HStack {
-                    Button("Cancel") {
-                        cancelNewSite()
-                    }
-
-                    Spacer()
-
-                    Button("Add") {
-                        addDraftSite()
-                    }
+            Picker("Authorization", selection: $authenticationMode) {
+                ForEach(BooruAuthenticationMode.allCases) { mode in
+                    Text(mode.displayName).tag(mode)
                 }
             }
+            .pickerStyle(.segmented)
+            .labelsHidden()
+            .frame(maxWidth: .infinity)
 
-            if let errorMessage {
-                Text(errorMessage)
-                    .font(.callout)
-                    .foregroundStyle(.red)
+            authenticationFields
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            Text(authenticationFooter)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            if apiType == .shimmie {
+                Text("Shimmie does not define a universal rating field, so the global NSFW filter cannot be guaranteed on arbitrary installations.")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private var addActions: some View {
+        HStack {
+            Button("Cancel") {
+                cancelNewSite()
             }
 
             Spacer()
+
+            Button("Add") {
+                addDraftSite()
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var authenticationFields: some View {
+        switch authenticationMode {
+        case .none:
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Browsing remains anonymous. Account-only actions are disabled.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+        case .apiKey:
+            switch apiType {
+            case .e621, .danbooru:
+                VStack(alignment: .leading, spacing: 8) {
+                    TextField("Username", text: $username)
+                        .textFieldStyle(.roundedBorder)
+                    SecureField("API Key", text: $apiKey)
+                        .textFieldStyle(.roundedBorder)
+                }
+
+            case .gelbooru:
+                VStack(alignment: .leading, spacing: 8) {
+                    TextField("User ID", text: $userID)
+                        .textFieldStyle(.roundedBorder)
+                    SecureField("API Key", text: $apiKey)
+                        .textFieldStyle(.roundedBorder)
+                }
+
+            case .philomena:
+                VStack(alignment: .leading, spacing: 8) {
+                    SecureField("API Key", text: $apiKey)
+                        .textFieldStyle(.roundedBorder)
+                }
+
+            case .moebooru, .shimmie:
+                VStack(alignment: .leading, spacing: 8) {
+                    SecureField("API Key / Token (optional)", text: $apiKey)
+                        .textFieldStyle(.roundedBorder)
+                }
+            }
+
+        case .credentials:
+            VStack(alignment: .leading, spacing: 8) {
+                TextField("Username / Email", text: $username)
+                    .textFieldStyle(.roundedBorder)
+                SecureField("Password", text: $password)
+                    .textFieldStyle(.roundedBorder)
+
+                Text("Credentials are stored in Keychain. They are available for site-specific browser/session authorization; public APIs do not provide one universal username/password write flow.")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+    }
+
+    private var authenticationFooter: String {
+        switch apiType {
+        case .e621:
+            return "e621 API actions use your username + API key with HTTP Basic authentication. Password credentials cannot vote or post comments through the public API."
+        case .philomena:
+            return "Philomena API keys authenticate JSON reads and expose interaction state. Voting and comment posting remain browser-session routes."
+        case .gelbooru:
+            return "Gelbooru DAPI uses User ID + API Key for authenticated reads. Stable public vote/comment write endpoints are not documented."
+        case .moebooru:
+            return "Moebooru browsing works anonymously. Legacy account authentication differs between installations."
+        case .danbooru:
+            return "Danbooru API authentication uses username + API key over HTTP Basic. Browsing works anonymously; write interactions are not enabled yet."
+        case .shimmie:
+            return "Shimmie authentication and write APIs are installation-specific. The current integration is read-only."
         }
     }
 
@@ -201,43 +349,34 @@ struct SettingsView: View {
         guard !isAddingSite, let site = selectedSite else {
             return false
         }
-
         return !settingsStore.isDefaultSite(site)
     }
 
     private var selectedSite: BooruSite? {
-        guard let selectedSiteID else {
-            return nil
-        }
-
+        guard let selectedSiteID = selectedSiteID else { return nil }
         return draftSites.first { $0.id == selectedSiteID }
     }
 
-    private var apiKeyPlaceholder: String {
-        switch apiType {
-        case .philomena:
-            return "API key (optional)"
-        case .e621, .danbooru:
-            return "username:api_key (optional)"
-        case .gelbooru:
-            return "user_id:api_key (Gelbooru may require this)"
-        case .moebooru:
-            return "Authentication not required for browsing"
-        case .shimmie:
-            return "Authentication is server-specific (optional)"
+    private func authenticationIcon(for siteID: UUID) -> String {
+        switch draftAuthenticationModes[siteID] ?? .none {
+        case .none:
+            return "lock.open"
+        case .apiKey:
+            return "key.fill"
+        case .credentials:
+            return "person.crop.circle.fill"
         }
     }
 
     private func loadDraftsIfNeeded() {
-        guard !didLoadDrafts else {
-            return
-        }
+        guard !didLoadDrafts else { return }
 
         didLoadDrafts = true
         draftSites = settingsStore.sites
-        draftAPIKeys = Dictionary(uniqueKeysWithValues: draftSites.map { site in
-            (site.id, settingsStore.apiKey(for: site) ?? "")
-        })
+
+        for site in draftSites {
+            loadAuthenticationDraft(for: site)
+        }
 
         if draftSites.contains(where: { $0.id == settingsStore.selectedSiteID }) {
             selectDraftSite(settingsStore.selectedSiteID)
@@ -246,6 +385,49 @@ struct SettingsView: View {
         } else {
             clearEditor()
         }
+    }
+
+    private func loadAuthenticationDraft(for site: BooruSite) {
+        let storedMode = settingsStore.authenticationMode(for: site)
+        let storedUsername = settingsStore.username(for: site) ?? ""
+        let storedPassword = settingsStore.password(for: site) ?? ""
+        let storedUserID = settingsStore.userID(for: site) ?? ""
+        let storedKey = settingsStore.apiKey(for: site) ?? ""
+
+        draftAuthenticationModes[site.id] = storedMode
+        draftPasswords[site.id] = storedPassword
+
+        if storedMode == .apiKey,
+           storedKey.contains(":"),
+           let separator = storedKey.firstIndex(of: ":") {
+            let first = String(storedKey[..<separator])
+            let second = String(storedKey[storedKey.index(after: separator)...])
+
+            switch site.resolvedProtocol {
+            case .e621, .danbooru:
+                if storedUsername.isEmpty {
+                    draftUsernames[site.id] = first
+                    draftUserIDs[site.id] = storedUserID
+                    draftAPIKeys[site.id] = second
+                    return
+                }
+
+            case .gelbooru:
+                if storedUserID.isEmpty {
+                    draftUsernames[site.id] = storedUsername
+                    draftUserIDs[site.id] = first
+                    draftAPIKeys[site.id] = second
+                    return
+                }
+
+            default:
+                break
+            }
+        }
+
+        draftUsernames[site.id] = storedUsername
+        draftUserIDs[site.id] = storedUserID
+        draftAPIKeys[site.id] = storedKey
     }
 
     private func startNewSite() {
@@ -258,8 +440,12 @@ struct SettingsView: View {
         isAddingSite = true
         name = ""
         baseURLString = "https://"
-        apiKey = ""
         apiType = .philomena
+        authenticationMode = .none
+        username = ""
+        password = ""
+        userID = ""
+        apiKey = ""
         errorMessage = nil
     }
 
@@ -267,7 +453,8 @@ struct SettingsView: View {
         isAddingSite = false
         errorMessage = nil
 
-        if let selectedSiteID, draftSites.contains(where: { $0.id == selectedSiteID }) {
+        if let selectedSiteID = selectedSiteID,
+           draftSites.contains(where: { $0.id == selectedSiteID }) {
             selectDraftSite(selectedSiteID)
         } else if draftSites.contains(where: { $0.id == settingsStore.selectedSiteID }) {
             selectDraftSite(settingsStore.selectedSiteID)
@@ -285,9 +472,9 @@ struct SettingsView: View {
         }
 
         draftSites.append(site)
-        draftAPIKeys[site.id] = apiKey
+        storeAuthenticationDraft(for: newID)
         isAddingSite = false
-        selectDraftSite(site.id)
+        selectDraftSite(newID)
     }
 
     private func selectDraftSite(_ siteID: UUID) {
@@ -301,12 +488,16 @@ struct SettingsView: View {
         name = site.name
         baseURLString = site.baseURL.absoluteString
         apiType = site.resolvedProtocol
+        authenticationMode = draftAuthenticationModes[site.id] ?? .none
+        username = draftUsernames[site.id] ?? ""
+        password = draftPasswords[site.id] ?? ""
+        userID = draftUserIDs[site.id] ?? ""
         apiKey = draftAPIKeys[site.id] ?? ""
         errorMessage = nil
     }
 
     private func stageCurrentEdit(showErrors: Bool) -> Bool {
-        guard !isAddingSite, let editingSiteID else {
+        guard !isAddingSite, let editingSiteID = editingSiteID else {
             return true
         }
 
@@ -320,8 +511,16 @@ struct SettingsView: View {
             draftSites.append(site)
         }
 
-        draftAPIKeys[site.id] = apiKey
+        storeAuthenticationDraft(for: editingSiteID)
         return true
+    }
+
+    private func storeAuthenticationDraft(for siteID: UUID) {
+        draftAuthenticationModes[siteID] = authenticationMode
+        draftUsernames[siteID] = username
+        draftPasswords[siteID] = password
+        draftUserIDs[siteID] = userID
+        draftAPIKeys[siteID] = apiKey
     }
 
     private func validatedSite(id: UUID, showErrors: Bool) -> BooruSite? {
@@ -350,6 +549,7 @@ struct SettingsView: View {
         }
 
         let resolvedAPIType = BooruProtocol.detected(from: baseURL) ?? apiType
+
         return BooruSite(
             id: id,
             name: trimmedName,
@@ -361,9 +561,7 @@ struct SettingsView: View {
     }
 
     private func detectedAPIType(for baseURLString: String) -> BooruProtocol? {
-        guard let url = URL(string: baseURLString) else {
-            return nil
-        }
+        guard let url = URL(string: baseURLString) else { return nil }
         return BooruProtocol.detected(from: url)
     }
 
@@ -386,10 +584,19 @@ struct SettingsView: View {
 
         do {
             for site in draftSites {
-                try settingsStore.upsertSite(site, apiKey: draftAPIKeys[site.id] ?? "")
+                let key = draftAPIKeys[site.id] ?? ""
+                try settingsStore.upsertSite(site, apiKey: key)
+                try settingsStore.saveAuthentication(
+                    for: site,
+                    mode: draftAuthenticationModes[site.id] ?? .none,
+                    username: draftUsernames[site.id] ?? "",
+                    password: draftPasswords[site.id] ?? "",
+                    userID: draftUserIDs[site.id] ?? "",
+                    apiKey: key
+                )
             }
 
-            if let desiredSelectedSiteID,
+            if let desiredSelectedSiteID = desiredSelectedSiteID,
                settingsStore.sites.contains(where: { $0.id == desiredSelectedSiteID }) {
                 settingsStore.selectedSiteID = desiredSelectedSiteID
             } else if let firstSiteID = settingsStore.sites.first?.id {
@@ -410,6 +617,10 @@ struct SettingsView: View {
         let deletedIndex = draftSites.firstIndex(where: { $0.id == site.id }) ?? 0
         draftSites.removeAll { $0.id == site.id }
         draftAPIKeys[site.id] = nil
+        draftUsernames[site.id] = nil
+        draftPasswords[site.id] = nil
+        draftUserIDs[site.id] = nil
+        draftAuthenticationModes[site.id] = nil
 
         if draftSites.isEmpty {
             clearEditor()
@@ -426,8 +637,12 @@ struct SettingsView: View {
         isAddingSite = false
         name = ""
         baseURLString = ""
-        apiKey = ""
         apiType = .philomena
+        authenticationMode = .none
+        username = ""
+        password = ""
+        userID = ""
+        apiKey = ""
         errorMessage = nil
     }
 }
